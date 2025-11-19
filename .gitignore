@@ -1,0 +1,68 @@
+##############################
+# Maven / Java
+##############################
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven Wrapper files (optional to keep)
+!.mvn/wrapper/maven-wrapper.jar
+
+##############################
+# IntelliJ IDEA
+##############################
+.idea/
+*.iml
+out/
+
+##############################
+# Logs
+##############################
+*.log
+logs/
+surefire-reports/
+hs_err_pid*
+replay_pid*
+
+##############################
+# Cucumber Reports
+##############################
+cucumber-report.html
+cucumber.json
+cucumber/
+reports/
+cucumber-report-html/
+**/cucumber-html-reports/
+
+##############################
+# Test Generated Files
+##############################
+test-output/
+generated-sources/
+generated-test-sources/
+
+##############################
+# Environment / Sensitive Files
+##############################
+.env
+*.env
+*.local
+*.key
+*.secret
+
+##############################
+# OS / System Files
+##############################
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+##############################
+# Backup / Temp Files
+##############################
+*.tmp
+*.temp
+*.swp
+*.swo
