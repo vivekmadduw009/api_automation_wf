@@ -21,7 +21,6 @@ out/
 # Logs
 ##############################
 *.log
-logs/
 surefire-reports/
 hs_err_pid*
 replay_pid*

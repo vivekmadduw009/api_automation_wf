@@ -2,27 +2,39 @@ package utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.FileInputStream;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigReader {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigReader.class);
+    private static final Properties properties = new Properties();
 
-    public static Properties properties;
+    static {
+        loadProperties();
+    }
 
-    public static void loadProperties() {
-        try {
-            FileInputStream fis = new FileInputStream("src/test/resources/config.properties");
-            properties = new Properties();
-            properties.load(fis);
+    private static void loadProperties() {
+        try (InputStream is = ConfigReader.class.getClassLoader().getResourceAsStream("config.properties")) {
+            if (is == null) {
+                logger.error("config.properties not found in classpath");
+                throw new RuntimeException("config.properties not found in classpath");
+            }
+            properties.load(is);
             logger.info("Config properties loaded successfully.");
-        } catch (Exception e) {
-            logger.error("Failed to load config.properties file", e);
+        } catch (IOException e) {
+            logger.error("Failed to load config.properties", e);
+            throw new RuntimeException("Failed to load config.properties", e);
         }
     }
 
     public static String get(String key) {
-        return properties.getProperty(key);
+        String val = properties.getProperty(key);
+        if (val == null) {
+            logger.warn("Missing config key: {}", key);
+        }
+        return val;
     }
 }
