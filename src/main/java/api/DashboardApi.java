@@ -2,9 +2,12 @@ package api;
 
 import io.restassured.response.Response;
 import org.slf4j.Logger;
+import routes.TicketRoutes;
+import utils.DatabaseUtil;
 import utils.LoggerUtil;
 import utils.RequestBuilder;
 
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,25 +31,30 @@ public class DashboardApi {
         dashboardSummaryResponse = given()
                 .spec(RequestBuilder.getAuthSpecCached())
                 .when()
-                .get("/api/version1/dashboard/summary");
+                .get(TicketRoutes.dashboardSummary());
         logger.debug("Get dashboard summary resp: {}", dashboardSummaryResponse.asPrettyString());
     }
 
-    public void validateDashboardStatusCode(int expected) {
-        Response responseToCheck = null;
-        if (dashboardSummaryResponse != null) {
-            responseToCheck = dashboardSummaryResponse;
-        } else if (dashboardChartsResponse != null) {
-            responseToCheck = dashboardChartsResponse;
-        }
-        if (responseToCheck == null) {
+    public void validateDashboardSummaryStatusCode(int expected) {
+        if (dashboardSummaryResponse == null) {
             throw new IllegalStateException("No response to verify status code");
         }
-        int actual = responseToCheck.getStatusCode();
+        int actual = dashboardSummaryResponse.getStatusCode();
         if (actual != expected) {
             throw new AssertionError("Status code mismatch. Expected: " + expected + " Actual: " + actual);
         }
-        logger.info("Validated status code: actual = {}, expected = {}", actual, expected);
+        logger.info("Validated dashboard summary status code: actual = {}, expected = {}", actual, expected);
+    }
+
+    public void validateDashboardChartsStatusCode(int expected) {
+        if (dashboardChartsResponse == null) {
+            throw new IllegalStateException("No response to verify status code");
+        }
+        int actual = dashboardChartsResponse.getStatusCode();
+        if (actual != expected) {
+            throw new AssertionError("Status code mismatch. Expected: " + expected + " Actual: " + actual);
+        }
+        logger.info("Validated dashboard charts status code: actual = {}, expected = {}", actual, expected);
     }
 
     private int getMetricCount(List<Map<String, Object>> metrics, String metricTitle) {
@@ -76,7 +84,7 @@ public class DashboardApi {
         long openTicketsCount = tickets.stream()
                 .filter(t -> {
                     String status = String.valueOf(t.get("status")).toLowerCase();
-                    return status.equals("open") || status.equals("inprogress");
+                    return status.equals("open") || status.equals("in_progress");
                 }).count();
 
         long unassignedTicketsCount = tickets.stream()
@@ -89,7 +97,7 @@ public class DashboardApi {
         long onHoldTicketsCount = tickets.stream()
                 .filter(t -> {
                     String status = String.valueOf(t.get("status")).toLowerCase();
-                    return status.equals("onhold");
+                    return status.equals("on_hold");
                 }).count();
 
         logger.info("Dashboard summary open tickets count: {}", openSummaryCount);
@@ -120,7 +128,7 @@ public class DashboardApi {
         dashboardChartsResponse = given()
                 .spec(RequestBuilder.getAuthSpecCached())
                 .when()
-                .get("/api/version1/dashboard/charts");
+                .get( TicketRoutes.dashboardCharts());
         logger.debug("Get dashboard charts resp: {}", dashboardChartsResponse.asPrettyString());
     }
 
@@ -189,7 +197,7 @@ public class DashboardApi {
             long expectedValue = entry.getValue();
 
             long actualValue = chartData.stream()
-                    .filter(d -> key.equalsIgnoreCase(String.valueOf(d.get("label")).toLowerCase()))
+                    .filter(d -> key.equalsIgnoreCase(normalize(String.valueOf(d.get("label"))).toLowerCase()))
                     .map(d -> Long.parseLong(String.valueOf(d.get("value"))))
                     .findFirst()
                     .orElse(0L);
@@ -212,5 +220,32 @@ public class DashboardApi {
         logger.info("--------------------------------------------------");
         logger.info("Chart '{}' validated SUCCESSFULLY", chartId);
         logger.info("--------------------------------------------------");
+    }
+
+    public void fetchTicketDataFromDatabase() {
+        logger.info("Fetching ticket data from database");
+        ResultSet rs = DatabaseUtil.executeQuery(
+                "SELECT * FROM tickets LIMIT 1"
+        );
+
+        logger.info("Ticket data fetched from database successfully");
+        logger.info("ResultSet: {}", rs);
+    }
+
+    public void validateTicketDataRetrieval() {
+        logger.info("Validating ticket data retrieval from database");
+        try {
+            ResultSet rs = DatabaseUtil.executeQuery(
+                    "SELECT * FROM tickets LIMIT 1"
+            );
+            logger.info("ResultSet obtained: {}", rs);
+            if (rs.next()) {
+                logger.info("Ticket data retrieved successfully: Ticket ID = {}", rs.getString("ticket_id"));
+            } else {
+                throw new AssertionError("No ticket data found in the database.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to validate ticket data retrieval: " + e.getMessage(), e);
+        }
     }
 }

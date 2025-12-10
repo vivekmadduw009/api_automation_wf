@@ -16,7 +16,7 @@ public class ConfigReader {
         loadProperties();
     }
 
-    private static void loadProperties() {
+    public static void loadProperties() {
         try (InputStream is = ConfigReader.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (is == null) {
                 logger.error("config.properties not found in classpath");

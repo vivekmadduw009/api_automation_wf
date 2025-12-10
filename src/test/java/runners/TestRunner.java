@@ -14,6 +14,6 @@ import static io.cucumber.junit.platform.engine.Constants.*;
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME,
         value = "pretty, html:target/cucumber-report.html, json:target/cucumber.json")
 @ConfigurationParameter(key = PLUGIN_PUBLISH_QUIET_PROPERTY_NAME, value = "true")
-//@ConfigurationParameter(key = FILTER_TAGS_PROPERTY_NAME, value = "@regression")
+@ConfigurationParameter(key = FILTER_TAGS_PROPERTY_NAME, value = "@testdb")
 public class TestRunner {
 }

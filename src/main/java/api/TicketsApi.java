@@ -2,10 +2,8 @@ package api;
 
 import io.restassured.response.Response;
 import org.slf4j.Logger;
-import utils.LoggerUtil;
-import utils.RequestBuilder;
-import utils.AuthManager;
-import utils.Role;
+import routes.TicketRoutes;
+import utils.*;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +12,7 @@ import static io.restassured.RestAssured.given;
 
 public class TicketsApi {
 
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final ApiManager apiManager;
 
     public TicketsApi(ApiManager apiManager) {
@@ -25,13 +24,11 @@ public class TicketsApi {
     private Response getTicketsResponse;
     private Response getTicketResponse;
     private Response createdTicketResponse;
+    private Response deletedTicketResponse;
+    private Response updateTickedResponse;
     private String deletedTicketId;
     private String updatedTicketId;
-    private String updatedStatus;
     private String createdTicketId;
-    private String assignedTicketId;
-    private String newAssignee;
-    private String oldAssignee;
 
     public void login(Role role) {
         AuthManager.getToken(role);
@@ -43,38 +40,76 @@ public class TicketsApi {
         getTicketsResponse = given()
                 .spec(RequestBuilder.getAuthSpecCached())
                 .when()
-                .get("/api/version1/tickets");
+                .get(TicketRoutes.getTickets());
         logger.debug("Get Tickets resp: {}", getTicketsResponse.asPrettyString());
         return getTicketsResponse;
     }
 
-    public void getTicket(String ticketId) {
-        getTicketResponse = null;
-        logger.info("Fetching ticket using {}", ticketId);
+    public void getTicket() {
+        Response resp = getTickets();
+        List<Map<String, Object>> tickets = resp.jsonPath().getList("tickets");
+        String ticket_id = String.valueOf(tickets.getFirst().get("ticket_id"));
+        logger.info("Fetching ticket using {}", ticket_id);
         getTicketResponse = given()
                 .spec(RequestBuilder.getAuthSpecCached())
                 .when()
-                .get("/api/version1/tickets/" + ticketId);
+                .get(TicketRoutes.getTicketById(ticket_id));
         logger.debug("Get Ticket resp: {}", getTicketResponse.asPrettyString());
     }
 
-    public void validateTicketsStatusCode(int expected) {
-        Response responseToCheck = null;
-        if (getTicketResponse != null) {
-            responseToCheck = getTicketResponse;
-        } else if (getTicketsResponse != null) {
-            responseToCheck = getTicketsResponse;
-        } else if (createdTicketResponse != null) {
-            responseToCheck = createdTicketResponse;
-        }
-        if (responseToCheck == null) {
+    public void validateGetTicketsStatusCode(int expected) {
+        if (getTicketsResponse == null) {
             throw new IllegalStateException("No response to verify status code");
         }
-        int actual = responseToCheck.getStatusCode();
+        int actual = getTicketsResponse.getStatusCode();
         if (actual != expected) {
             throw new AssertionError("Status code mismatch. Expected: " + expected + " Actual: " + actual);
         }
-        logger.info("Validated status code: actual = {}, expected = {}", actual, expected);
+        logger.info("Validated get tickets status code: actual = {}, expected = {}", actual, expected);
+    }
+
+    public void validateGetTicketStatusCode(int expected) {
+        if (getTicketResponse == null) {
+            throw new IllegalStateException("No response to verify status code");
+        }
+        int actual = getTicketResponse.getStatusCode();
+        if (actual != expected) {
+            throw new AssertionError("Status code mismatch. Expected: " + expected + " Actual: " + actual);
+        }
+        logger.info("Validated get ticket status code: actual = {}, expected = {}", actual, expected);
+    }
+
+    public void validateCreateTicketStatusCode(int expected) {
+        if (createdTicketResponse == null) {
+            throw new IllegalStateException("No response to verify status code");
+        }
+        int actual = createdTicketResponse.getStatusCode();
+        if (actual != expected) {
+            throw new AssertionError("Status code mismatch. Expected: " + expected + " Actual: " + actual);
+        }
+        logger.info("Validated created ticket status code: actual = {}, expected = {}", actual, expected);
+    }
+
+    public void validateDeleteTicketStatusCode(int expected) {
+        if (deletedTicketResponse == null) {
+            throw new IllegalStateException("No response to verify status code");
+        }
+        int actual = deletedTicketResponse.getStatusCode();
+        if (actual != expected) {
+            throw new AssertionError("Status code mismatch. Expected: " + expected + " Actual: " + actual);
+        }
+        logger.info("Validated delete ticket status code: actual = {}, expected = {}", actual, expected);
+    }
+
+    public void validateUpdateTicketStatusCode(int expected) {
+        if (updateTickedResponse == null) {
+            throw new IllegalStateException("No response to verify status code");
+        }
+        int actual = updateTickedResponse.getStatusCode();
+        if (actual != expected) {
+            throw new AssertionError("Status code mismatch. Expected: " + expected + " Actual: " + actual);
+        }
+        logger.info("Validated update ticket status code: actual = {}, expected = {}", actual, expected);
     }
 
     public void validateTicketResponse() {
@@ -163,7 +198,7 @@ public class TicketsApi {
                 .spec(RequestBuilder.getAuthSpecCached())
                 .body(ticketData)
                 .when()
-                .post("/api/version1/tickets");
+                .post(TicketRoutes.createTicket());
         logger.debug("Create response: {}", createdTicketResponse.asPrettyString());
     }
 
@@ -190,6 +225,7 @@ public class TicketsApi {
                 .findFirst()
                 .orElseThrow(() ->
                         new AssertionError("Created ticket_id " + createdTicketId + " NOT found in GET response"));
+
         logger.info("Found created ticket {} in GET response", createdTicketId);
         for (String key : expectedInputData.keySet()) {
             String expected = expectedInputData.get(key);
@@ -203,24 +239,16 @@ public class TicketsApi {
         logger.info("GET response matches created ticket {} successfully", createdTicketId);
     }
 
-    public String extractAnyTicketIdFromLastGet() {
-        List<Map<String, Object>> tickets = getTicketsResponse.jsonPath().getList("tickets");
-        if (tickets == null || tickets.isEmpty()) {
-            throw new AssertionError("No tickets to extract");
-        }
-        Map<String, Object> first = tickets.getFirst();
-        String id = String.valueOf(first.get("ticket_id"));
-        logger.info("Extracted ticket_id: {}", id);
-        return id;
-    }
-
-    public void deleteTicket(String ticketId) {
-        logger.info("Deleting ticket: {}", ticketId);
-        this.deletedTicketId = ticketId;
-        Response deletedTicketResponse = given()
+    public void deleteTicket() {
+        Response resp = getTickets();
+        List<Map<String, Object>> tickets = resp.jsonPath().getList("tickets");
+        String ticket_id = String.valueOf(tickets.getFirst().get("ticket_id"));
+        logger.info("Deleting ticket: {}", ticket_id);
+        this.deletedTicketId = ticket_id;
+        deletedTicketResponse = given()
                 .spec(RequestBuilder.getAuthSpecCached())
                 .when()
-                .delete("/api/version1/tickets/" + ticketId);
+                .delete(TicketRoutes.deleteTicket(ticket_id));
         logger.debug("Delete response: {}", deletedTicketResponse.asPrettyString());
     }
 
@@ -233,36 +261,6 @@ public class TicketsApi {
             throw new AssertionError("Ticket still present after delete: " + deletedTicketId);
         }
         logger.info("Deletion verified for ticket_id={} from the ticket list", deletedTicketId);
-    }
-
-    public void updateTicketStatus(String status) {
-        Response resp = getTickets();
-        List<Map<String, Object>> tickets = resp.jsonPath().getList("tickets");
-        if (tickets == null || tickets.isEmpty()) {
-            throw new AssertionError("No tickets to update");
-        }
-        this.updatedTicketId = String.valueOf(tickets.getFirst().get("ticket_id"));
-        this.updatedStatus = status;
-        Response updatedStatusResponse = given()
-                .spec(RequestBuilder.getAuthSpecCached())
-                .body(Map.of("status", status))
-                .when()
-                .patch("/api/version1/tickets/" + updatedTicketId + "/status");
-        logger.debug("Update response: {}", updatedStatusResponse.asPrettyString());
-    }
-
-    public void verifyUpdatedTicketStatus() {
-        Response fresh = getTickets();
-        List<Map<String, Object>> tickets = fresh.jsonPath().getList("tickets");
-        Map<String, Object> ticket = tickets.stream()
-                .filter(t -> updatedTicketId.equals(String.valueOf(t.get("ticket_id"))))
-                .findFirst()
-                .orElseThrow(() -> new AssertionError("Updated ticket not found: " + updatedTicketId));
-        String actualStatus = String.valueOf(ticket.get("status"));
-        if (!updatedStatus.equals(actualStatus)) {
-            throw new AssertionError("Status mismatch. Expected: " + updatedStatus + " Actual: " + actualStatus);
-        }
-        logger.info("Status update verified for {} -> {}", updatedTicketId, actualStatus);
     }
 
     public void verifyAssignToIsNull() {
@@ -305,36 +303,63 @@ public class TicketsApi {
         logger.info("Error message validated: {}", expected);
     }
 
-    public void updateTicketAssignee(String assign) {
+    public void validateTicketsPagination() {
+        logger.info("Validating tickets pagination...");
+        Map<String, Object> pagination = getTicketsResponse.jsonPath().getJsonObject("meta");
+        if (pagination == null) {
+            throw new AssertionError("Pagination info missing in response: " + getTicketsResponse.asPrettyString());
+        }
+
+        List<String> requiredFields = List.of(
+                "current_page",
+                "next_page",
+                "prev_page",
+                "total_pages",
+                "total_count"
+        );
+        for (String field : requiredFields) {
+            if (!pagination.containsKey(field)) {
+                throw new AssertionError("Missing pagination field '" + field + "' in meta: " + pagination);
+            }
+        }
+        logger.info("Pagination validated successfully with fields: {}", requiredFields);
+    }
+
+    public void updateTicketDetails(Map<String, String> data) {
         Response resp = getTickets();
         List<Map<String, Object>> tickets = resp.jsonPath().getList("tickets");
         if (tickets == null || tickets.isEmpty()) {
-            throw new AssertionError("No tickets to update assignee");
+            throw new AssertionError("No tickets to update details");
         }
 
-        Map<String, Object> firstTicket = tickets.getFirst();
-        this.assignedTicketId = String.valueOf(firstTicket.get("ticket_id"));
-        this.oldAssignee = String.valueOf(firstTicket.get("assign_to"));
-        this.newAssignee = assign;
-        Response updatedAssigneeResponse = given()
+        Map<String, Object> targetTicket = tickets.getFirst();
+        this.updatedTicketId = String.valueOf(targetTicket.get("ticket_id"));
+
+        updateTickedResponse = given()
                 .spec(RequestBuilder.getAuthSpecCached())
-                .body(Map.of("assign_to", newAssignee))
+                .body(data)
                 .when()
-                .patch("/api/version1/tickets/" + assignedTicketId + "/assign");
-        logger.debug("Update assignee response: {}", updatedAssigneeResponse.asPrettyString());
+                .put(TicketRoutes.updateTicket(updatedTicketId));
+        logger.debug("Update details response: {}", updateTickedResponse.asPrettyString());
     }
 
-    public void verifyUpdatedTicketAssignee() {
+    public void verifyUpdatedTicketDetails(Map<String, String> expectedData) {
         Response fresh = getTickets();
         List<Map<String, Object>> tickets = fresh.jsonPath().getList("tickets");
         Map<String, Object> ticket = tickets.stream()
-                .filter(t -> assignedTicketId.equals(String.valueOf(t.get("ticket_id"))))
+                .filter(t -> updatedTicketId.equals(String.valueOf(t.get("ticket_id"))))
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("Assigned ticket not found: " + assignedTicketId));
-        String actualAssignee = String.valueOf(ticket.get("assign_to"));
-        if (!newAssignee.equals(actualAssignee)) {
-            throw new AssertionError("Assignee mismatch. Expected: " + newAssignee + " Actual: " + actualAssignee);
+                .orElseThrow(() -> new AssertionError("Updated ticket not found: " + updatedTicketId));
+
+        for (String key : expectedData.keySet()) {
+            String expected = expectedData.get(key);
+            String actual = String.valueOf(ticket.get(key));
+            if (!expected.equals(actual)) {
+                throw new AssertionError(
+                        "Field '" + key + "' mismatch. Expected: " + expected + " Actual: " + actual
+                );
+            }
         }
-        logger.info("Updated Assignee for the ticketId: {}, newAssignee = {}, oldAssignee = {}", assignedTicketId, actualAssignee, oldAssignee);
+        logger.info("Details update verified for {} with data {}", updatedTicketId, expectedData);
     }
 }

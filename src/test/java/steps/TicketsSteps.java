@@ -3,7 +3,6 @@ package steps;
 import api.ApiManager;
 import io.cucumber.java.en.*;
 import utils.Role;
-
 import java.util.Map;
 
 public class TicketsSteps {
@@ -28,15 +27,33 @@ public class TicketsSteps {
 
     @And("I fetch a ticket using ticket_id from the fetched tickets")
     public void getTicketFromFetchedList() {
-        String ticketId = api.tickets().extractAnyTicketIdFromLastGet();
-        api.tickets().getTicket(ticketId);
+        api.tickets().getTicket();
     }
 
-    @Then("the tickets API response status code should be {int}")
-    public void validateTicketsStatusCode(int expectedStatusCode) {
-        api.tickets().validateTicketsStatusCode(expectedStatusCode);
+    @Then("the create ticket API response status code should be {int}")
+    public void validateCreateTicketStatusCode(int expectedStatusCode) {
+        api.tickets().validateCreateTicketStatusCode(expectedStatusCode);
     }
 
+    @Then("the get tickets API response status code should be {int}")
+    public void validateGetTicketsStatusCode(int expectedStatusCode) {
+        api.tickets().validateGetTicketsStatusCode(expectedStatusCode);
+    }
+
+    @Then("the delete ticket API response status code should be {int}")
+    public void validateDeleteTicketStatusCode(int expectedStatusCode) {
+        api.tickets().validateDeleteTicketStatusCode(expectedStatusCode);
+    }
+
+    @Then("the update ticket API response status code should be {int}")
+    public void validateUpdateTicketStatusCode(int expectedStatusCode) {
+        api.tickets().validateUpdateTicketStatusCode(expectedStatusCode);
+    }
+
+    @Then("the get ticket API response status code should be {int}")
+    public void validateGetTicketStatusCode(int expectedStatusCode) {
+        api.tickets().validateGetTicketStatusCode(expectedStatusCode);
+    }
 
     @Then("the tickets response should be valid")
     public void validateTickets() {
@@ -56,23 +73,12 @@ public class TicketsSteps {
 
     @And("I delete a ticket using ticket_id from the fetched tickets")
     public void deleteTicketFromFetchedList() {
-        String ticketId = api.tickets().extractAnyTicketIdFromLastGet();
-        api.tickets().deleteTicket(ticketId);
+        api.tickets().deleteTicket();
     }
 
     @Then("verify the ticket is deleted successfully in the tickets list")
     public void verifyDeletion() {
         api.tickets().verifyTicketDeletionResponse();
-    }
-
-    @When("I update the status of a ticket to {string}")
-    public void updateTicketStatus(String newStatus) {
-        api.tickets().updateTicketStatus(newStatus);
-    }
-
-    @Then("verify the ticket status is updated successfully in the tickets list")
-    public void verifyUpdatedStatus() {
-        api.tickets().verifyUpdatedTicketStatus();
     }
 
     @Then("the created ticket should have assign_to as null")
@@ -95,14 +101,20 @@ public class TicketsSteps {
         api.tickets().verifyErrorMessage(expected);
     }
 
-    @And("I update the assignee of a ticket to {string}")
-    public void updateTicketAssignee(String assign) {
-        api.tickets().updateTicketAssignee(assign);
+    @And("verify the tickets response has pagination implemented")
+    public void verifyTicketsPagination() {
+        api.tickets().validateTicketsPagination();
     }
 
-    @Then("verify the ticket assignee is updated successfully in the tickets list")
-    public void verifyUpdatedAssignee() {
-        api.tickets().verifyUpdatedTicketAssignee();
+    @And("I update the details of a ticket with:")
+    public void updateTicketDetails(Map<String, String> data) {
+        lastTicketData = data;
+        api.tickets().updateTicketDetails(data);
+    }
+
+    @Then("verify the ticket details are updated successfully in the tickets list")
+    public void verifyUpdatedTicketDetails() {
+        api.tickets().verifyUpdatedTicketDetails(lastTicketData);
     }
 
 }
