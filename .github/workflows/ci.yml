@@ -54,7 +54,7 @@ jobs:
           retention-days: 7 # How long to keep the artifact available
 
       - name: Deploy Cucumber Report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v6
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./repo/target/cucumber-report-html/cucumber-html-reports
