@@ -18,11 +18,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }} # Use the PAT/Token secret
 
       - name: ⬇️ Start Services with Docker Compose
-        run: docker compose -f docker-compose.yml up -d
+        run: docker compose -f ./docker-compose.yml up -d
 
       - name: ⏳ Run init_postgres.sh to Configure Database
         # Execute your existing shell script to patch PostgreSQL config
-        run: bash init_postgres.sh
+        run: bash ./init_postgres.sh
 
       # --- Configure Java/Maven Environment for Testing ---
 
@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cucumber-html-reports
-          path: target/cucumber-report-html/ # **ADJUST THIS PATH** if your reports are elsewhere
+          path: ./target/cucumber-report-html/ # **ADJUST THIS PATH** if your reports are elsewhere
           retention-days: 7 # How long to keep the artifact available
 
       - name: 🎉 All Done!
