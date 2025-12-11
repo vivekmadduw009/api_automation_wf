@@ -50,8 +50,10 @@ jobs:
         run: |
           REPORT_DIR="repo/target/cucumber-report-html/cucumber-html-reports"
           INDEX_FILE="${REPORT_DIR}/index.html"
-          
-          cat << 'EOF' > "$INDEX_FILE"
+
+          # IMPORTANT: Use 'EOF' without quotes to allow shell commands to be executed
+          # inside the document, specifically for the 'find' command.
+          cat << EOF > "$INDEX_FILE"
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -131,12 +133,13 @@ jobs:
                       document.querySelector('#toggle i').className = document.body.classList.contains('dark') ? 'fas fa-sun' : 'fas fa-moon';
                   });
 
-                  // Get all .html files except index.html
+                  // This is where the file list is dynamically inserted by the shell command:
                   const files = [
-                  $(find "$REPORT_DIR" -maxdepth 1 -type f -name "*.html" ! -name "index.html" -printf '%f\n' | sort -r | sed 's/^/"/;s/$/",/' | tr '\n' ' ' | sed 's/, $//')
+                  $(find "$REPORT_DIR" -maxdepth 1 -type f -name "*.html" ! -name "index.html" -printf '"%f",\n' | sort -r | tr -d '\n' | sed 's/,\s*$//')
                   ];
 
-                  const reports = files.length > 0 ? files[0].split(',').map(f => f.replace(/"/g,'').trim()).filter(Boolean) : [];
+                  // Re-map the array to clean it up - keeping the original logic
+                  const reports = files.filter(Boolean); // Clean up any potential empty strings
 
                   function render() {
                       const term = document.getElementById('search').value.toLowerCase();
@@ -150,20 +153,28 @@ jobs:
                       }
                       document.getElementById('empty').style.display = 'none';
 
+                      // Helper function to format the current date/time when the card is created
+                      const now = new Date();
+                      const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+                      const timeOptions = { hour: '2-digit', minute: '2-digit' };
+                      const formattedDate = now.toLocaleDateString('en-US', dateOptions);
+                      const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
+
+
                       filtered.forEach(name => {
                           const card = document.createElement('a');
                           card.href = name;
                           card.className = 'report-card';
-                          card.innerHTML = `
+                          card.innerHTML = \`
                               <div class="report-header">
                                   <div style="font-size:2rem;margin-bottom:0.5rem;">📊</div>
-                                  <h3 class="report-title">${name}</h3>
+                                  <h3 class="report-title">\${name}</h3>
                               </div>
                               <div class="report-meta">
-                                  <i class="fas fa-calendar"></i> $(date '+%B %d, %Y')<br>
-                                  <i class="fas fa-clock"></i> $(date '+%H:%M')
+                                  <i class="fas fa-calendar"></i> \${formattedDate}<br>
+                                  <i class="fas fa-clock"></i> \${formattedTime}
                               </div>
-                          `;
+                          \`;
                           grid.appendChild(card);
                       });
                   }
