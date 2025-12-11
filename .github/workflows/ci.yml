@@ -42,7 +42,7 @@ jobs:
 
       - name: 🧪 Run API Automation Tests with Maven
         # This command runs your Cucumber tests and generates the report
-        run: mvn clean install -DskipTests=false
+        run: mvn clean install -DskipTests=false -e -X
         working-directory: ./repo
 
       # --- Report Generation and Upload ---
