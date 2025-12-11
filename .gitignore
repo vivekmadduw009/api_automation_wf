@@ -50,6 +50,7 @@ generated-test-sources/
 *.local
 *.key
 *.secret
+.secrets
 
 ##############################
 # OS / System Files
