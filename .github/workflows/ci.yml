@@ -53,5 +53,11 @@ jobs:
           path: repo/target/cucumber-report-html/ # **ADJUST THIS PATH** if your reports are elsewhere
           retention-days: 7 # How long to keep the artifact available
 
+      - name: Deploy Cucumber Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./repo/target/cucumber-report-html/cucumber-html-reports
+
       - name: 🎉 All Done!
         run: echo "Workflow complete. Cucumber report artifacts are available for download."
