@@ -51,271 +51,291 @@ jobs:
           REPORT_DIR="repo/target/cucumber-report-html/cucumber-html-reports"
           INDEX_FILE="${REPORT_DIR}/index.html"
           JSON_FILE="repo/target/cucumber-report.json"
+          PYTHON_SCRIPT="get_stats.py"
           
-          # 1. Calculate Summary Statistics using an inline Python script
-          # The script reads the JSON, calculates the stats, and prints them as shell variables
-          STATS=$(python -c '
+          # 1. Write the Python logic to a temporary file
+          cat << 'PYEOF' > $PYTHON_SCRIPT
           import json
           import sys
-        
-          def calculate_stats(data):
-              stats = {"passed": 0, "failed": 0, "skipped": 0, "pending": 0, "undefined": 0, "total": 0}
-              for feature in data:
-                  for element in feature.get("elements", []):
-                      for step_list in ["steps", "before", "after"]:
-                          for step in element.get(step_list, []):
-                              # Step is the most granular check, so we count status on steps
-                              result = step.get("result", {})
-                              status = result.get("status")
-                              if status:
-                                  if status in stats:
-                                      stats[status] += 1
-                                  stats["total"] += 1 # Total step count
-        
-              # Recalculate total steps based on summed known statuses (Passed + Failed + ...)
-              stats["total"] = stats["passed"] + stats["failed"] + stats["skipped"] + stats["pending"] + stats["undefined"]
-        
-              # Calculate percentages
-              if stats["total"] > 0:
-                  for key in ["passed", "failed", "skipped", "pending", "undefined"]:
-                      stats[f"{key}_percent"] = round((stats[key] / stats["total"]) * 100, 2)
-              else:
-                  for key in ["passed", "failed", "skipped", "pending", "undefined"]:
-                      stats[f"{key}_percent"] = 0.0
-        
-              # Format variables for shell export
-              output = []
-              for k, v in stats.items():
-                  output.append(f"{k.upper()}=\'{v}\'")
-              print(" ".join(output))
-        
-          try:
-              with open(sys.argv[1], "r") as f:
-                  data = json.load(f)
-              calculate_stats(data)
-          except Exception as e:
-              # Print zeros if the file is missing or corrupted
-              print("PASSED=\'0\' FAILED=\'0\' SKIPPED=\'0\' PENDING=\'0\' UNDEFINED=\'0\' TOTAL=\'0\' PASSED_PERCENT=\'0.0\' FAILED_PERCENT=\'0.0\' SKIPPED_PERCENT=\'0.0\' PENDING_PERCENT=\'0.0\' UNDEFINED_PERCENT=\'0.0\'")
-        
-                  ' "$JSON_FILE")
           
-          # 2. Export stats as shell variables (e.g., PASSED="132")
+          def calculate_stats(data):
+            stats = {
+              "passed": 0,
+              "failed": 0,
+              "skipped": 0,
+              "pending": 0,
+              "undefined": 0,
+              "total": 0,
+            }
+            for feature in data:
+              for element in feature.get("elements", []):
+                for step_list in ["steps", "before", "after"]:
+                  for step in element.get(step_list, []):
+                    result = step.get("result", {})
+                    status = result.get("status")
+                    if status:
+                      if status in stats:
+                        stats[status] += 1
+                      stats["total"] += 1
+        
+            stats["total"] = (
+            stats["passed"]
+            + stats["failed"]
+            + stats["skipped"]
+            + stats["pending"]
+            + stats["undefined"]
+            )
+        
+            if stats["total"] > 0:
+              for key in ["passed", "failed", "skipped", "pending", "undefined"]:
+                stats[f"{key}_percent"] = round((stats[key] / stats["total"]) * 100, 2)
+            else:
+              for key in ["passed", "failed", "skipped", "pending", "undefined"]:
+                stats[f"{key}_percent"] = 0.0
+        
+            output = []
+            for k, v in stats.items():
+              # Use single quotes around values for robustness during Bash eval
+              output.append(f"{k.upper()}='{v}'")
+            print(" ".join(output))
+        
+
+          try:
+            with open(sys.argv[1], "r") as f:
+              data = json.load(f)
+            calculate_stats(data)
+          except Exception as e:
+            # Print zeros if the file is missing or corrupted
+            print(
+            "PASSED='0' FAILED='0' SKIPPED='0' PENDING='0' UNDEFINED='0' TOTAL='0' PASSED_PERCENT='0.0' FAILED_PERCENT='0.0' SKIPPED_PERCENT='0.0' PENDING_PERCENT='0.0' UNDEFINED_PERCENT='0.0'"
+            )
+
+          PYEOF
+        
+          # 2. Execute the Python script and capture the output variables
+          STATS=$(python $PYTHON_SCRIPT "$JSON_FILE")
+          
+          # 3. Export stats as shell variables using eval
           eval $STATS
           
-          # Assign defaults in case the eval fails for robustness
+          # Assign defaults (still good practice, though Python handles the zero case)
           PASSED="${PASSED:-0}"
           FAILED="${FAILED:-0}"
           TOTAL="${TOTAL:-0}"
           PASSED_PERCENT="${PASSED_PERCENT:-0.0}"
           FAILED_PERCENT="${FAILED_PERCENT:-0.0}"
           
-          # 3. Generate index.html with new content
+          # 4. Generate index.html with new content (using the new variables)
           cat << EOF > "$INDEX_FILE"
           <!DOCTYPE html>
           <html lang="en">
           <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Cucumber Test Reports</title>
-              <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-              <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-              <style>
-                  :root {
-                      --primary: #4f46e5;
-                      --primary-light: #6366f1;
-                      --green-500: #10b981;
-                      --red-500: #ef4444;
-                      --gray-100: #f3f4f6;
-                      --gray-200: #e5e7eb;
-                      --gray-600: #4b5563;
-                      --gray-800: #1f2937;
-                      --gray-900: #111827;
-                      --radius: 12px;
-                      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-                      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                  }
-                  body { 
-                      font-family: 'Inter', sans-serif; 
-                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                      margin:0; min-height:100vh; color:#1f2937;
-                  }
-                  body.dark { background:#0f172a; color:#e2e8f0; }
-                  .container { max-width:1200px; margin:0 auto; padding:2rem 1rem; }
-                  h1 { font-size:3rem; font-weight:700; text-align:center; color:white; text-shadow:0 4px 10px rgba(0,0,0,0.3); margin:0 0 1rem; }
-                  .controls { display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:2rem; }
-                  .search-box { position:relative; flex:1; max-width:400px; }
-                  .search-box input { width:100%; padding:0.75rem 1rem 0.75rem 2.5rem; border:none; border-radius:var(--radius); box-shadow:var(--shadow); font-size:1rem; }
-                  .search-box i { position:absolute; left:0.8rem; top:50%; transform:translateY(-50%); color:#6b7280; }
-                  .theme-toggle { background:rgba(255,255,255,0.2); border:none; color:white; padding:0.75rem; border-radius:50%; cursor:pointer; font-size:1.2rem; backdrop-filter:blur(10px); }
-                  .reports-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.5rem; }
-                  .report-card { background:white; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); transition:var(--transition); }
-                  body.dark .report-card { background:#1e293b; }
-                  .report-card:hover { transform:translateY(-8px); box-shadow:0 20px 40px -10px rgba(0,0,0,0.2); }
-                  .report-header { padding:1.5rem; background:linear-gradient(to right,var(--primary),var(--primary-light)); color:white; }
-                  .report-title { margin:0; font-size:1.1rem; font-weight:600; }
-                  .report-meta { padding:1.25rem 1.5rem; color:#6b7280; font-size:0.9rem; }
-                  body.dark .report-meta { color:#94a3b8; }
-                  a { text-decoration:none; color:inherit; display:block; }
-                  footer { text-align:center; margin-top:4rem; color:rgba(255,255,255,0.8); }
-          
-                  /* New Stats Card Styles */
-                  .stats-card {
-                      background: rgba(255, 255, 255, 0.9);
-                      padding: 2rem;
-                      border-radius: var(--radius);
-                      box-shadow: var(--shadow);
-                      margin-bottom: 2rem;
-                      display: flex;
-                      align-items: center;
-                      gap: 2rem;
-                      flex-wrap: wrap; /* Make it responsive */
-                  }
-                  body.dark .stats-card { background: #1e293b; color: #e2e8f0; }
-          
-                  .stats-summary {
-                      min-width: 200px;
-                      flex-grow: 1;
-                  }
-                  .stats-summary p { margin: 0.5rem 0; font-size: 1.1rem; }
-                  .stats-summary strong { font-size: 1.5rem; font-weight: 700; }
-                  .passed-text { color: var(--green-500); }
-                  .failed-text { color: var(--red-500); }
-          
-                  /* Visual Bar Chart */
-                  .chart-wrapper {
-                      flex-grow: 2;
-                      min-width: 250px;
-                  }
-                  .chart-container {
-                      height: 30px;
-                      border-radius: 15px;
-                      overflow: hidden;
-                      background: var(--red-500);
-                      display: flex;
-                      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-                  }
-                  .passed-bar {
-                      height: 100%;
-                      background: var(--green-500);
-                      transition: width 0.5s ease-in-out;
-                      text-align: right;
-                      white-space: nowrap;
-                      padding: 0 10px;
-                      box-sizing: border-box;
-                      font-weight: 600;
-                      line-height: 30px;
-                      color: white;
-                  }
-                  .chart-labels {
-                      display: flex;
-                      justify-content: space-between;
-                      margin-top: 0.5rem;
-                      font-size: 0.9rem;
-                      font-weight: 500;
-                      color: var(--gray-800);
-                  }
-                  body.dark .chart-labels { color: var(--gray-200); }
-          
-              </style>
-          </head>
-          <body>
-              <div class="container">
-                  <h1>🌱 Cucumber Reports</h1>
-                  <p style="text-align:center;color:white;font-size:1.2rem;">Automated Test Execution Results</p>
-          
-                  <div class="controls">
-                      <div class="search-box">
-                          <i class="fas fa-search"></i>
-                          <input type="text" id="search" placeholder="Search reports...">
-                      </div>
-                      <button class="theme-toggle" id="toggle"><i class="fas fa-moon"></i></button>
-                  </div>
-          
-                  <div class="stats-card">
-                      <div class="stats-summary">
-                          <p>Total Steps: <strong>${TOTAL}</strong></p>
-                          <p class="passed-text">Passed: <strong>${PASSED}</strong></p>
-                          <p class="failed-text">Failed: <strong>${FAILED}</strong></p>
-                      </div>
-                      <div class="chart-wrapper">
-                          <div class="chart-container" title="Passed: ${PASSED_PERCENT}%, Failed: ${FAILED_PERCENT}%">
-                              <div class="passed-bar" style="width: ${PASSED_PERCENT}%;">${PASSED_PERCENT}%</div>
-                          </div>
-                          <div class="chart-labels">
-                              <span class="passed-text">Passed</span>
-                              <span class="failed-text">Failed</span>
-                          </div>
-                      </div>
-                  </div>
-          
-                  <div class="reports-grid" id="grid"></div>
-                  <p id="empty" style="text-align:center;color:white;display:none;">
-                      <i class="fas fa-search fa-3x" style="opacity:0.4;"></i><br><br>
-                      No reports found
-                  </p>
-          
-                  <footer>
-                      Generated on $(date '+%Y-%m-%d at %H:%M:%S') • Cucumber JVM
-                  </footer>
-              </div>
-          
-              <script>
-                  // Dark mode
-                  if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('dark');
-                  document.getElementById('toggle').addEventListener('click', () => {
-                      document.body.classList.toggle('dark');
-                      document.querySelector('#toggle i').className = document.body.classList.contains('dark') ? 'fas fa-sun' : 'fas fa-moon';
-                  });
-          
-                  // This is where the file list is dynamically inserted by the shell command:
-                  const files = [
-                  $(find "$REPORT_DIR" -maxdepth 1 -type f -name "*.html" ! -name "index.html" -printf '"%f",\n' | sort -r | tr -d '\n' | sed 's/,\s*$//')
-                  ];
-          
-                  // Re-map the array to clean it up - keeping the original logic
-                  const reports = files.filter(Boolean); // Clean up any potential empty strings
-          
-                  function render() {
-                      const term = document.getElementById('search').value.toLowerCase();
-                      const filtered = reports.filter(f => f.toLowerCase().includes(term));
-                      const grid = document.getElementById('grid');
-                      grid.innerHTML = '';
-          
-                      if (filtered.length === 0) {
-                          document.getElementById('empty').style.display = 'block';
-                          return;
-                      }
-                      document.getElementById('empty').style.display = 'none';
-          
-                      // Helper function to format the current date/time when the card is created
-                      const now = new Date();
-                      const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-                      const timeOptions = { hour: '2-digit', minute: '2-digit' };
-                      const formattedDate = now.toLocaleDateString('en-US', dateOptions);
-                      const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
-          
-          
-                      filtered.forEach(name => {
-                          const card = document.createElement('a');
-                          card.href = name;
-                          card.className = 'report-card';
-                          card.innerHTML = \`
-                              <div class="report-header">
-                                  <div style="font-size:2rem;margin-bottom:0.5rem;">📊</div>
-                                  <h3 class="report-title">\${name}</h3>
-                              </div>
-                              <div class="report-meta">
-                                  <i class="fas fa-calendar"></i> \${formattedDate}<br>
-                                  <i class="fas fa-clock"></i> \${formattedTime}
-                              </div>
-                          \`;
-                          grid.appendChild(card);
-                      });
-                  }
-          
-                  document.getElementById('search').addEventListener('input', render);
-                  render();
-              </script>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Cucumber Test Reports</title>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+          <style>
+          :root {
+          --primary: #4f46e5;
+          --primary-light: #6366f1;
+          --green-500: #10b981;
+          --red-500: #ef4444;
+          --gray-100: #f3f4f6;
+          --gray-200: #e5e7eb;
+          --gray-600: #4b5563;
+          --gray-800: #1f2937;
+          --gray-900: #111827;
+          --radius: 12px;
+          --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+          --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+            body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin:0; min-height:100vh; color:#1f2937;
+          }
+            body.dark { background:#0f172a; color:#e2e8f0; }
+            .container { max-width:1200px; margin:0 auto; padding:2rem 1rem; }
+            h1 { font-size:3rem; font-weight:700; text-align:center; color:white; text-shadow:0 4px 10px rgba(0,0,0,0.3); margin:0 0 1rem; }
+            .controls { display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:2rem; }
+            .search-box { position:relative; flex:1; max-width:400px; }
+            .search-box input { width:100%; padding:0.75rem 1rem 0.75rem 2.5rem; border:none; border-radius:var(--radius); box-shadow:var(--shadow); font-size:1rem; }
+            .search-box i { position:absolute; left:0.8rem; top:50%; transform:translateY(-50%); color:#6b7280; }
+            .theme-toggle { background:rgba(255,255,255,0.2); border:none; color:white; padding:0.75rem; border-radius:50%; cursor:pointer; font-size:1.2rem; backdrop-filter:blur(10px); }
+            .reports-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.5rem; }
+            .report-card { background:white; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); transition:var(--transition); }
+            body.dark .report-card { background:#1e293b; }
+            .report-card:hover { transform:translateY(-8px); box-shadow:0 20px 40px -10px rgba(0,0,0,0.2); }
+            .report-header { padding:1.5rem; background:linear-gradient(to right,var(--primary),var(--primary-light)); color:white; }
+            .report-title { margin:0; font-size:1.1rem; font-weight:600; }
+            .report-meta { padding:1.25rem 1.5rem; color:#6b7280; font-size:0.9rem; }
+            body.dark .report-meta { color:#94a3b8; }
+            a { text-decoration:none; color:inherit; display:block; }
+            footer { text-align:center; margin-top:4rem; color:rgba(255,255,255,0.8); }
+            
+            /* New Stats Card Styles */
+            .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+          }
+            body.dark .stats-card { background: #1e293b; color: #e2e8f0; }
+        
+            .stats-summary {
+            min-width: 200px;
+            flex-grow: 1;
+          }
+            .stats-summary p { margin:
+              0.5rem 0; font-size: 1.1rem; }
+            .stats-summary strong { font-size:
+              1.5rem; font-weight: 700; }
+            .passed-text { color: var(--green-500); }
+            .failed-text { color: var(--red-500); }
+        
+            /* Visual Bar Chart */
+            .chart-wrapper {
+            flex-grow: 2;
+            min-width: 250px;
+          }
+            .chart-container {
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: var(--red-500);
+            display: flex;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+            .passed-bar {
+            height: 100%;
+            background: var(--green-500);
+            transition: width 0.5s ease-in-out;
+            text-align: right;
+            white-space: nowrap;
+            padding: 0 10px;
+            box-sizing: border-box;
+            font-weight: 600;
+            line-height: 30px;
+            color: white;
+          }
+            .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray-800);
+          }
+            body.dark .chart-labels { color: var(--gray-200); }
+        
+            </style>
+            </head>
+            <body>
+            <div class="container">
+            <h1>🌱 Cucumber Reports</h1>
+            <p style="text-align:center;color:white;font-size:1.2rem;">Automated Test Execution Results</p>
+            
+            <div class="controls">
+            <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search" placeholder="Search reports...">
+            </div>
+            <button class="theme-toggle" id="toggle"><i class="fas fa-moon"></i></button>
+            </div>
+            
+            <div class="stats-card">
+            <div class="stats-summary">
+            <p>Total Steps: <strong>${TOTAL}</strong></p>
+            <p class="passed-text">Passed: <strong>${PASSED}</strong></p>
+            <p class="failed-text">Failed: <strong>${FAILED}</strong></p>
+            </div>
+            <div class="chart-wrapper">
+            <div class="chart-container" title="Passed:
+              ${PASSED_PERCENT}%, Failed: ${FAILED_PERCENT}%">
+                <div class="passed-bar" style="width: ${PASSED_PERCENT}%;">${PASSED_PERCENT}%</div>
+            </div>
+            <div class="chart-labels">
+            <span class="passed-text">Passed</span>
+            <span class="failed-text">Failed</span>
+            </div>
+            </div>
+            </div>
+            
+            <div class="reports-grid" id="grid"></div>
+            
+            <p id="empty" style="text-align:center;color:white;display:none;">
+            <i class="fas fa-search fa-3x" style="opacity:0.4;"></i><br><br>
+            No reports found
+            </p>
+            
+            <footer>
+            Generated on $(date '+%Y-%m-%d at %H:%M:%S') • Cucumber JVM
+            </footer>
+            </div>
+            
+            <script>
+            // Dark mode
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('dark');
+            document.getElementById('toggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            document.querySelector('#toggle i').className = document.body.classList.contains('dark') ? 'fas fa-sun': 'fas fa-moon';
+          });
+        
+            // This is where the file list is dynamically inserted by the shell command:
+            const files = [
+            $(find "$REPORT_DIR" -maxdepth 1 -type f -name "*.html" ! -name "index.html" -printf '"%f",\n' | sort -r | tr -d '\n' | sed 's/,\s*$//')
+          ];
+            
+            // Re-map the array to clean it up - keeping the original logic
+            const reports = files.filter(Boolean); // Clean up any potential empty strings
+            
+            function render() {
+            const term = document.getElementById('search').value.toLowerCase();
+            const filtered = reports.filter(f => f.toLowerCase().includes(term));
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            if (filtered.length === 0) {
+            document.getElementById('empty').style.display = 'block';
+            return;
+          }
+            document.getElementById('empty').style.display = 'none';
+            
+            // Helper function to format the current date/time when the card is created
+            const now = new Date();
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit' };
+            const formattedDate = now.toLocaleDateString('en-US', dateOptions);
+            const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
+            
+            
+            filtered.forEach(name => {
+            const card = document.createElement('a');
+            card.href = name;
+            card.className = 'report-card';
+            card.innerHTML = \`
+            <div class="report-header">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">📊</div>
+            <h3 class="report-title">\${name}</h3>
+            </div>
+            <div class="report-meta">
+            <i class="fas fa-calendar"></i> \${formattedDate}<br>
+            <i class="fas fa-clock"></i> \${formattedTime}
+            </div>
+            \`;
+            grid.appendChild(card);
+          });
+          }
+  
+          document.getElementById('search').addEventListener('input', render);
+          render();
+          </script>
           </body>
           </html>
           EOF
