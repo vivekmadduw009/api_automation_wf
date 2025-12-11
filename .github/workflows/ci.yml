@@ -3,61 +3,84 @@ name: build_test_report
 on:
   push:
     branches:
-      - master # Triggers the workflow when code is merged or pushed to the master branch
+      - master
 
 jobs:
   build_test_report:
-    runs-on: ubuntu-latest # The runner environment to execute the steps
+    runs-on: ubuntu-latest
 
     steps:
-      # 💥 CRITICAL: ADD THIS STEP TO DOWNLOAD YOUR CODE
       - name: ⚙️ Checkout Repository
         uses: actions/checkout@v4
         with:
-          # Checkout the repo into a folder named 'repo' to simplify paths
           path: 'repo'
 
       - name: 🔒 Log in to Docker Hub
-        # ONLY REQUIRED IF YOUR DOCKER IMAGES ARE PRIVATE
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }} # Use the PAT/Token secret
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: ⬇️ Start Services with Docker Compose
         run: docker compose -f repo/docker-compose.yml up -d
 
-      - name: ⏳ Run init_postgres.sh to Configure Database
-        # Execute your existing shell script to patch PostgreSQL config
+      - name: ⏳ Run PostgreSQL Init Script
         run: bash repo/init_postgres.sh
-
-      # --- Configure Java/Maven Environment for Testing ---
 
       - name: ☕ Set up JDK 22
         uses: actions/setup-java@v4
         with:
           java-version: '22'
           distribution: 'temurin'
-          cache: 'maven' # Caches Maven dependencies for faster runs
+          cache: 'maven'
 
       - name: 🧪 Run API Automation Tests with Maven
-        # This command runs your Cucumber tests and generates the report
         run: mvn clean test || true
         working-directory: ./repo
 
-      # The Cucumber reports are usually generated in the 'target/cucumber-reports/' directory
       - name: 📊 Upload Cucumber Report Files
         uses: actions/upload-artifact@v4
         with:
           name: cucumber-html-reports
-          path: repo/target/cucumber-report-html/ # **ADJUST THIS PATH** if your reports are elsewhere
-          retention-days: 7 # How long to keep the artifact available
+          path: repo/target/cucumber-report-html/
+          retention-days: 7
 
-      - name: Deploy Cucumber Report to GitHub Pages
+      # ⭐ Generate index.html BEFORE deployment
+      - name: 🧾 Generate index.html for GitHub Pages
+        run: |
+          REPORT_DIR="repo/target/cucumber-report-html/cucumber-html-reports"
+
+          INDEX_FILE="${REPORT_DIR}/index.html"
+
+          echo "<!DOCTYPE html>" > $INDEX_FILE
+          echo "<html>" >> $INDEX_FILE
+          echo "<head>" >> $INDEX_FILE
+          echo "  <title>Cucumber Test Reports</title>" >> $INDEX_FILE
+          echo "  <style>" >> $INDEX_FILE
+          echo "    body { font-family: Arial, sans-serif; padding: 20px; }" >> $INDEX_FILE
+          echo "    h1 { color: #2c3e50; }" >> $INDEX_FILE
+          echo "    ul { font-size: 18px; }" >> $INDEX_FILE
+          echo "    a { text-decoration: none; color: #2980b9; }" >> $INDEX_FILE
+          echo "  </style>" >> $INDEX_FILE
+          echo "</head>" >> $INDEX_FILE
+          echo "<body>" >> $INDEX_FILE
+          echo "  <h1>Cucumber Test Reports</h1>" >> $INDEX_FILE
+          echo "  <p>Click any report below:</p>" >> $INDEX_FILE
+          echo "  <ul>" >> $INDEX_FILE
+
+          for file in $REPORT_DIR/*.html; do
+            FILENAME=$(basename "$file")
+            echo "    <li><a href=\"$FILENAME\">$FILENAME</a></li>" >> $INDEX_FILE
+          done
+
+          echo "  </ul>" >> $INDEX_FILE
+          echo "</body></html>" >> $INDEX_FILE
+
+      - name: 🚀 Deploy Cucumber Report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           publish_dir: ./repo/target/cucumber-report-html/cucumber-html-reports
 
       - name: 🎉 All Done!
-        run: echo "Workflow complete. Cucumber report artifacts are available for download."
+        run: echo "Workflow complete. Reports deployed to GitHub Pages."
