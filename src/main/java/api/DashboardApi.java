@@ -8,6 +8,8 @@ import utils.LoggerUtil;
 import utils.RequestBuilder;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -224,12 +226,37 @@ public class DashboardApi {
 
     public void fetchTicketDataFromDatabase() {
         logger.info("Fetching ticket data from database");
-        ResultSet rs = DatabaseUtil.executeQuery(
-                "SELECT * FROM tickets LIMIT 1"
-        );
 
-        logger.info("Ticket data fetched from database successfully");
-        logger.info("ResultSet: {}", rs);
+        String sql = "SELECT * FROM tickets LIMIT 1";
+        try (ResultSet rs = DatabaseUtil.executeQuery(sql)) {
+            if (rs == null) {
+                throw new RuntimeException("Failed to fetch ticket data: ResultSet is null");
+            }
+
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            if (rs.next()) {
+                StringBuilder rowData = new StringBuilder("Fetched row: {");
+
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = metaData.getColumnName(i);
+                    Object columnValue = rs.getObject(i);
+                    if (i > 1) {
+                        rowData.append(columnName).append(" = ").append(columnValue).append(" || ");
+                    }
+                }
+                rowData.append("}");
+
+                logger.info("Ticket data Fetched successfully");
+                logger.info("Result content :{}", rowData);
+            } else {
+                logger.warn("ResultSet is empty, no ticket data found");
+            }
+        } catch (SQLException s) {
+            logger.error("SQL Exception while fetching ticket data: {}", s.getMessage(), s);
+            throw new RuntimeException("SQL Exception: " + s.getMessage(), s);
+        }
     }
 
     public void validateTicketDataRetrieval() {
@@ -238,7 +265,6 @@ public class DashboardApi {
             ResultSet rs = DatabaseUtil.executeQuery(
                     "SELECT * FROM tickets LIMIT 1"
             );
-            logger.info("ResultSet obtained: {}", rs);
             if (rs.next()) {
                 logger.info("Ticket data retrieved successfully: Ticket ID = {}", rs.getString("ticket_id"));
             } else {
