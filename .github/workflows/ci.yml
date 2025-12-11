@@ -18,7 +18,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }} # Use the PAT/Token secret
 
       - name: ⬇️ Start Services with Docker Compose
-        run: docker compose up -d
+        run: docker compose -f docker-compose.yml up -d
 
       - name: ⏳ Run init_postgres.sh to Configure Database
         # Execute your existing shell script to patch PostgreSQL config
