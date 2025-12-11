@@ -135,7 +135,7 @@ public class DashboardApi {
     }
 
     private String normalize(String s) {
-        return s == null ? "" : s.trim().toLowerCase().replace("_", "");
+        return s == null ? "" : s.trim().toLowerCase().replace("_", "").replace(" ", "");
     }
 
     public void validateDashboardChartsResponse() {

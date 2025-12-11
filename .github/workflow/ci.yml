@@ -1,0 +1,51 @@
+name: CI Workflow - Build, Configure DB, and Test
+
+on:
+  push:
+    branches:
+      - master # Triggers the workflow when code is merged or pushed to the master branch
+
+jobs:
+  build_test_report:
+    runs-on: ubuntu-latest # The runner environment to execute the steps
+
+    steps:
+      - name: 🔒 Log in to Docker Hub
+        # ONLY REQUIRED IF YOUR DOCKER IMAGES ARE PRIVATE
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }} # Use the PAT/Token secret
+
+      - name: ⬇️ Start Services with Docker Compose
+        run: docker compose up -d
+
+      - name: ⏳ Run init_postgres.sh to Configure Database
+        # Execute your existing shell script to patch PostgreSQL config
+        run: bash init_postgres.sh
+
+      # --- Configure Java/Maven Environment for Testing ---
+
+      - name: ☕ Set up JDK 17 (or your required version)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven' # Caches Maven dependencies for faster runs
+
+      - name: 🧪 Run API Automation Tests with Maven
+        # This command runs your Cucumber tests and generates the report
+        run: mvn clean install -DskipTests=false
+
+      # --- Report Generation and Upload ---
+
+      # The Cucumber reports are usually generated in the 'target/cucumber-reports/' directory
+      - name: 📊 Upload Cucumber Report Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-html-reports
+          path: target/cucumber-report-html/ # **ADJUST THIS PATH** if your reports are elsewhere
+          retention-days: 7 # How long to keep the artifact available
+
+      - name: 🎉 All Done!
+        run: echo "Workflow complete. Cucumber report artifacts are available for download."

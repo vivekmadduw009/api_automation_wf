@@ -1,0 +1,25 @@
+services:
+  backend:
+    image: vimalwissen/ticket-flow-app:version20
+    container_name: backend
+    ports:
+      - "3000:3000"
+      - "5432:5432"
+    restart: always
+    networks:
+      - app-net
+
+  frontend:
+    image: vivekwissen/ticket-desk:version5
+    container_name: frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
