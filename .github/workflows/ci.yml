@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest # The runner environment to execute the steps
 
     steps:
+      # 💥 CRITICAL: ADD THIS STEP TO DOWNLOAD YOUR CODE
+      - name: ⚙️ Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Checkout the repo into a folder named 'repo' to simplify paths
+          path: 'repo'
+
       - name: 🔒 Log in to Docker Hub
         # ONLY REQUIRED IF YOUR DOCKER IMAGES ARE PRIVATE
         uses: docker/login-action@v3
@@ -18,11 +25,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }} # Use the PAT/Token secret
 
       - name: ⬇️ Start Services with Docker Compose
-        run: docker compose -f ./docker-compose.yml up -d
+        run: docker compose -f repo/docker-compose.yml up -d
 
       - name: ⏳ Run init_postgres.sh to Configure Database
         # Execute your existing shell script to patch PostgreSQL config
-        run: bash ./init_postgres.sh
+        run: bash repo/init_postgres.sh
 
       # --- Configure Java/Maven Environment for Testing ---
 
@@ -36,6 +43,7 @@ jobs:
       - name: 🧪 Run API Automation Tests with Maven
         # This command runs your Cucumber tests and generates the report
         run: mvn clean install -DskipTests=false
+        working-directory: ./repo
 
       # --- Report Generation and Upload ---
 
@@ -44,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cucumber-html-reports
-          path: ./target/cucumber-report-html/ # **ADJUST THIS PATH** if your reports are elsewhere
+          path: repo/target/cucumber-report-html/ # **ADJUST THIS PATH** if your reports are elsewhere
           retention-days: 7 # How long to keep the artifact available
 
       - name: 🎉 All Done!
