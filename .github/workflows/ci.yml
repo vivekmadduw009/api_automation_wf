@@ -50,9 +50,66 @@ jobs:
         run: |
           REPORT_DIR="repo/target/cucumber-report-html/cucumber-html-reports"
           INDEX_FILE="${REPORT_DIR}/index.html"
-
-          # IMPORTANT: Use 'EOF' without quotes to allow shell commands to be executed
-          # inside the document, specifically for the 'find' command.
+          JSON_FILE="repo/target/cucumber-report.json"
+          
+          # 1. Calculate Summary Statistics using an inline Python script
+          # The script reads the JSON, calculates the stats, and prints them as shell variables
+          STATS=$(python -c '
+          import json
+          import sys
+        
+          def calculate_stats(data):
+              stats = {"passed": 0, "failed": 0, "skipped": 0, "pending": 0, "undefined": 0, "total": 0}
+              for feature in data:
+                  for element in feature.get("elements", []):
+                      for step_list in ["steps", "before", "after"]:
+                          for step in element.get(step_list, []):
+                              # Step is the most granular check, so we count status on steps
+                              result = step.get("result", {})
+                              status = result.get("status")
+                              if status:
+                                  if status in stats:
+                                      stats[status] += 1
+                                  stats["total"] += 1 # Total step count
+        
+              # Recalculate total steps based on summed known statuses (Passed + Failed + ...)
+              stats["total"] = stats["passed"] + stats["failed"] + stats["skipped"] + stats["pending"] + stats["undefined"]
+        
+              # Calculate percentages
+              if stats["total"] > 0:
+                  for key in ["passed", "failed", "skipped", "pending", "undefined"]:
+                      stats[f"{key}_percent"] = round((stats[key] / stats["total"]) * 100, 2)
+              else:
+                  for key in ["passed", "failed", "skipped", "pending", "undefined"]:
+                      stats[f"{key}_percent"] = 0.0
+        
+              # Format variables for shell export
+              output = []
+              for k, v in stats.items():
+                  output.append(f"{k.upper()}=\'{v}\'")
+              print(" ".join(output))
+        
+          try:
+              with open(sys.argv[1], "r") as f:
+                  data = json.load(f)
+              calculate_stats(data)
+          except Exception as e:
+              # Print zeros if the file is missing or corrupted
+              print("PASSED=\'0\' FAILED=\'0\' SKIPPED=\'0\' PENDING=\'0\' UNDEFINED=\'0\' TOTAL=\'0\' PASSED_PERCENT=\'0.0\' FAILED_PERCENT=\'0.0\' SKIPPED_PERCENT=\'0.0\' PENDING_PERCENT=\'0.0\' UNDEFINED_PERCENT=\'0.0\'")
+        
+                  ' "$JSON_FILE")
+          
+          # 2. Export stats as shell variables (e.g., PASSED="132")
+          eval $STATS
+          
+          # Assign defaults in case the eval fails for robustness
+          PASSED="${PASSED:-0}"
+          FAILED="${FAILED:-0}"
+          TOTAL="${TOTAL:-0}"
+          PASSED_PERCENT="${PASSED_PERCENT:-0.0}"
+          FAILED_PERCENT="${FAILED_PERCENT:-0.0}"
+          
+          # 3. Generate index.html with new content
           cat << EOF > "$INDEX_FILE"
           <!DOCTYPE html>
           <html lang="en">
@@ -66,6 +123,8 @@ jobs:
                   :root {
                       --primary: #4f46e5;
                       --primary-light: #6366f1;
+                      --green-500: #10b981;
+                      --red-500: #ef4444;
                       --gray-100: #f3f4f6;
                       --gray-200: #e5e7eb;
                       --gray-600: #4b5563;
@@ -98,13 +157,72 @@ jobs:
                   body.dark .report-meta { color:#94a3b8; }
                   a { text-decoration:none; color:inherit; display:block; }
                   footer { text-align:center; margin-top:4rem; color:rgba(255,255,255,0.8); }
+          
+                  /* New Stats Card Styles */
+                  .stats-card {
+                      background: rgba(255, 255, 255, 0.9);
+                      padding: 2rem;
+                      border-radius: var(--radius);
+                      box-shadow: var(--shadow);
+                      margin-bottom: 2rem;
+                      display: flex;
+                      align-items: center;
+                      gap: 2rem;
+                      flex-wrap: wrap; /* Make it responsive */
+                  }
+                  body.dark .stats-card { background: #1e293b; color: #e2e8f0; }
+          
+                  .stats-summary {
+                      min-width: 200px;
+                      flex-grow: 1;
+                  }
+                  .stats-summary p { margin: 0.5rem 0; font-size: 1.1rem; }
+                  .stats-summary strong { font-size: 1.5rem; font-weight: 700; }
+                  .passed-text { color: var(--green-500); }
+                  .failed-text { color: var(--red-500); }
+          
+                  /* Visual Bar Chart */
+                  .chart-wrapper {
+                      flex-grow: 2;
+                      min-width: 250px;
+                  }
+                  .chart-container {
+                      height: 30px;
+                      border-radius: 15px;
+                      overflow: hidden;
+                      background: var(--red-500);
+                      display: flex;
+                      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+                  }
+                  .passed-bar {
+                      height: 100%;
+                      background: var(--green-500);
+                      transition: width 0.5s ease-in-out;
+                      text-align: right;
+                      white-space: nowrap;
+                      padding: 0 10px;
+                      box-sizing: border-box;
+                      font-weight: 600;
+                      line-height: 30px;
+                      color: white;
+                  }
+                  .chart-labels {
+                      display: flex;
+                      justify-content: space-between;
+                      margin-top: 0.5rem;
+                      font-size: 0.9rem;
+                      font-weight: 500;
+                      color: var(--gray-800);
+                  }
+                  body.dark .chart-labels { color: var(--gray-200); }
+          
               </style>
           </head>
           <body>
               <div class="container">
                   <h1>🌱 Cucumber Reports</h1>
                   <p style="text-align:center;color:white;font-size:1.2rem;">Automated Test Execution Results</p>
-
+          
                   <div class="controls">
                       <div class="search-box">
                           <i class="fas fa-search"></i>
@@ -112,19 +230,35 @@ jobs:
                       </div>
                       <button class="theme-toggle" id="toggle"><i class="fas fa-moon"></i></button>
                   </div>
-
+          
+                  <div class="stats-card">
+                      <div class="stats-summary">
+                          <p>Total Steps: <strong>${TOTAL}</strong></p>
+                          <p class="passed-text">Passed: <strong>${PASSED}</strong></p>
+                          <p class="failed-text">Failed: <strong>${FAILED}</strong></p>
+                      </div>
+                      <div class="chart-wrapper">
+                          <div class="chart-container" title="Passed: ${PASSED_PERCENT}%, Failed: ${FAILED_PERCENT}%">
+                              <div class="passed-bar" style="width: ${PASSED_PERCENT}%;">${PASSED_PERCENT}%</div>
+                          </div>
+                          <div class="chart-labels">
+                              <span class="passed-text">Passed</span>
+                              <span class="failed-text">Failed</span>
+                          </div>
+                      </div>
+                  </div>
+          
                   <div class="reports-grid" id="grid"></div>
-
                   <p id="empty" style="text-align:center;color:white;display:none;">
                       <i class="fas fa-search fa-3x" style="opacity:0.4;"></i><br><br>
                       No reports found
                   </p>
-
+          
                   <footer>
                       Generated on $(date '+%Y-%m-%d at %H:%M:%S') • Cucumber JVM
                   </footer>
               </div>
-
+          
               <script>
                   // Dark mode
                   if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('dark');
@@ -132,35 +266,35 @@ jobs:
                       document.body.classList.toggle('dark');
                       document.querySelector('#toggle i').className = document.body.classList.contains('dark') ? 'fas fa-sun' : 'fas fa-moon';
                   });
-
+          
                   // This is where the file list is dynamically inserted by the shell command:
                   const files = [
                   $(find "$REPORT_DIR" -maxdepth 1 -type f -name "*.html" ! -name "index.html" -printf '"%f",\n' | sort -r | tr -d '\n' | sed 's/,\s*$//')
                   ];
-
+          
                   // Re-map the array to clean it up - keeping the original logic
                   const reports = files.filter(Boolean); // Clean up any potential empty strings
-
+          
                   function render() {
                       const term = document.getElementById('search').value.toLowerCase();
                       const filtered = reports.filter(f => f.toLowerCase().includes(term));
                       const grid = document.getElementById('grid');
                       grid.innerHTML = '';
-
+          
                       if (filtered.length === 0) {
                           document.getElementById('empty').style.display = 'block';
                           return;
                       }
                       document.getElementById('empty').style.display = 'none';
-
+          
                       // Helper function to format the current date/time when the card is created
                       const now = new Date();
                       const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
                       const timeOptions = { hour: '2-digit', minute: '2-digit' };
                       const formattedDate = now.toLocaleDateString('en-US', dateOptions);
                       const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
-
-
+          
+          
                       filtered.forEach(name => {
                           const card = document.createElement('a');
                           card.href = name;
@@ -178,7 +312,7 @@ jobs:
                           grid.appendChild(card);
                       });
                   }
-
+          
                   document.getElementById('search').addEventListener('input', render);
                   render();
               </script>
