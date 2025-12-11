@@ -65,7 +65,7 @@
         </p>
 
         <footer>
-            Generated on $(date '+%Y-%m-%d at %H:%M:%S') • Cucumber JVM
+            Generated on 2025-12-11 at 17:10:27 • Cucumber JVM
         </footer>
     </div>
 
@@ -77,12 +77,13 @@
             document.querySelector('#toggle i').className = document.body.classList.contains('dark') ? 'fas fa-sun' : 'fas fa-moon';
         });
 
-        // Get all .html files except index.html
+        // This is where the file list is dynamically inserted by the shell command:
         const files = [
-        $(find "$REPORT_DIR" -maxdepth 1 -type f -name "*.html" ! -name "index.html" -printf '%f\n' | sort -r | sed 's/^/"/;s/$/",/' | tr '\n' ' ' | sed 's/, $//')
+        "report-tag_695217830.html","report-tag_233058432.html","report-tag_2235974863.html","report-tag_1832099379.html","report-tag_1407660627.html","report-tag_1079845743.html","report-feature_3_1546055472.html","report-feature_2_1166968067.html","report-feature_2769583588.html","report-feature_1_1305997522.html","overview-tags.html","overview-steps.html","overview-features.html","overview-failures.html"
         ];
 
-        const reports = files.length > 0 ? files[0].split(',').map(f => f.replace(/"/g,'').trim()).filter(Boolean) : [];
+        // Re-map the array to clean it up - keeping the original logic
+        const reports = files.filter(Boolean); // Clean up any potential empty strings
 
         function render() {
             const term = document.getElementById('search').value.toLowerCase();
@@ -96,6 +97,14 @@
             }
             document.getElementById('empty').style.display = 'none';
 
+            // Helper function to format the current date/time when the card is created
+            const now = new Date();
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit' };
+            const formattedDate = now.toLocaleDateString('en-US', dateOptions);
+            const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
+
+
             filtered.forEach(name => {
                 const card = document.createElement('a');
                 card.href = name;
@@ -106,8 +115,8 @@
                         <h3 class="report-title">${name}</h3>
                     </div>
                     <div class="report-meta">
-                        <i class="fas fa-calendar"></i> $(date '+%B %d, %Y')<br>
-                        <i class="fas fa-clock"></i> $(date '+%H:%M')
+                        <i class="fas fa-calendar"></i> ${formattedDate}<br>
+                        <i class="fas fa-clock"></i> ${formattedTime}
                     </div>
                 `;
                 grid.appendChild(card);
