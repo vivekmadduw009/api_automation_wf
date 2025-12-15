@@ -16,6 +16,30 @@ Feature: Tickets API Validation
     Then the create ticket API response status code should be 201
     And verify the created ticket data from get tickets response
 
+  Scenario: Create a new ticket with assignee and priority medium
+    When I create a ticket with details:
+      | title       | Testing tickets |
+      | description | System issue2   |
+      | priority    | medium          |
+      | source      | email           |
+      | status      | open            |
+      | requestor   | agent@gmail.com |
+      | assign_to   | agent@gmail.com |
+    Then the create ticket API response status code should be 201
+    And verify the created ticket data from get tickets response
+
+  Scenario: Create a new ticket with assignee and priority high
+    When I create a ticket with details:
+      | title       | Testing tickets |
+      | description | System issue2   |
+      | priority    | high            |
+      | source      | email           |
+      | status      | open            |
+      | requestor   | agent@gmail.com |
+      | assign_to   | agent@gmail.com |
+    Then the create ticket API response status code should be 201
+    And verify the created ticket data from get tickets response
+
   Scenario: Fetch all tickets
     When I fetch all tickets
     Then the get tickets API response status code should be 200
