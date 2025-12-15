@@ -76,7 +76,7 @@ $(document).ready(function() {
     <tr class="info">
       <td>ExecutionResult</td>
         <td>1</td>
-      <td>11 Dec 2025, 17:44</td>
+      <td>15 Dec 2025, 08:46</td>
     </tr>
   </tbody>
 </table>
@@ -129,18 +129,18 @@ $(document).ready(function() {
         <tbody>
         <tr>
           <td class="tagname">Tickets API Validation</td>
-          <td      class="passed"    >61</td>
+          <td      class="passed"    >69</td>
           <td >0</td>
           <td >0</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">61</td>
+          <td class="total">69</td>
 
-          <td  class="passed"    >14</td>
+          <td  class="passed"    >16</td>
           <td >0</td>
-          <td class="total">14</td>
+          <td class="total">16</td>
 
-          <td class="duration" data-value="2440497255">2.440</td>
+          <td class="duration" data-value="2542655941">2.542</td>
           <td class="passed">Passed</td>
         </tr>
         </tbody>
@@ -194,7 +194,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">1.636</span>
+  <span class="lead-duration duration">1.616</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -237,7 +237,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">I am logged in as a valid user</span>
 
-  <span class="lead-duration duration">1.636</span>
+  <span class="lead-duration duration">1.616</span>
 
 </div>
 
@@ -278,7 +278,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.257</span>
+  <span class="lead-duration duration">0.268</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-3">
@@ -353,7 +353,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">I create a ticket with details:</span>
 
-  <span class="lead-duration duration">0.200</span>
+  <span class="lead-duration duration">0.211</span>
 
 </div>
 
@@ -410,7 +410,7 @@ $(document).ready(function() {
   <span class="keyword indention">Then</span>
   <span class="name">the create ticket API response status code should be <span class="argument">201</span></span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -437,7 +437,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">verify the created ticket data from get tickets response</span>
 
-  <span class="lead-duration duration">0.056</span>
+  <span class="lead-duration duration">0.055</span>
 
 </div>
 
@@ -591,14 +591,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.028</span>
+  <span class="lead-duration duration">0.070</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-9">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Fetch all tickets</span>
+  <span class="name">Create a new ticket with assignee and priority medium</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -664,9 +664,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">I fetch all tickets</span>
+  <span class="name">I create a ticket with details:</span>
 
-  <span class="lead-duration duration">0.017</span>
+  <span class="lead-duration duration">0.026</span>
 
 </div>
 
@@ -676,6 +676,36 @@ $(document).ready(function() {
 
 
 
+          <table class="step-arguments">
+              <tr>
+                  <td>title</td>
+                  <td>Testing tickets</td>
+              </tr>
+              <tr>
+                  <td>description</td>
+                  <td>System issue2</td>
+              </tr>
+              <tr>
+                  <td>priority</td>
+                  <td>medium</td>
+              </tr>
+              <tr>
+                  <td>source</td>
+                  <td>email</td>
+              </tr>
+              <tr>
+                  <td>status</td>
+                  <td>open</td>
+              </tr>
+              <tr>
+                  <td>requestor</td>
+                  <td>agent@gmail.com</td>
+              </tr>
+              <tr>
+                  <td>assign_to</td>
+                  <td>agent@gmail.com</td>
+              </tr>
+          </table>
 
 
 
@@ -691,7 +721,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
-  <span class="name">the get tickets API response status code should be <span class="argument">200</span></span>
+  <span class="name">the create ticket API response status code should be <span class="argument">201</span></span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -718,9 +748,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">the tickets response should be valid</span>
+  <span class="name">verify the created ticket data from get tickets response</span>
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.043</span>
 
 </div>
 
@@ -874,14 +904,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.070</span>
+  <span class="lead-duration duration">0.063</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Fetch a ticket by ID</span>
+  <span class="name">Create a new ticket with assignee and priority high</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -947,36 +977,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">I fetch all tickets</span>
+  <span class="name">I create a ticket with details:</span>
 
-  <span class="lead-duration duration">0.016</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">I fetch a ticket using ticket_id from the fetched tickets</span>
-
-  <span class="lead-duration duration">0.043</span>
+  <span class="lead-duration duration">0.022</span>
 
 </div>
 
@@ -986,6 +989,36 @@ $(document).ready(function() {
 
 
 
+          <table class="step-arguments">
+              <tr>
+                  <td>title</td>
+                  <td>Testing tickets</td>
+              </tr>
+              <tr>
+                  <td>description</td>
+                  <td>System issue2</td>
+              </tr>
+              <tr>
+                  <td>priority</td>
+                  <td>high</td>
+              </tr>
+              <tr>
+                  <td>source</td>
+                  <td>email</td>
+              </tr>
+              <tr>
+                  <td>status</td>
+                  <td>open</td>
+              </tr>
+              <tr>
+                  <td>requestor</td>
+                  <td>agent@gmail.com</td>
+              </tr>
+              <tr>
+                  <td>assign_to</td>
+                  <td>agent@gmail.com</td>
+              </tr>
+          </table>
 
 
 
@@ -1001,7 +1034,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
-  <span class="name">the get ticket API response status code should be <span class="argument">200</span></span>
+  <span class="name">the create ticket API response status code should be <span class="argument">201</span></span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1028,9 +1061,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">verify the fetched ticket data is valid</span>
+  <span class="name">verify the created ticket data from get tickets response</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.040</span>
 
 </div>
 
@@ -1100,7 +1133,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-19">
@@ -1143,7 +1176,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">I am logged in as a valid user</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1184,14 +1217,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.105</span>
+  <span class="lead-duration duration">0.030</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-21">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Deleting a ticket</span>
+  <span class="name">Fetch all tickets</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1259,34 +1292,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">I fetch all tickets</span>
 
-  <span class="lead-duration duration">0.017</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">I delete a ticket using ticket_id from the fetched tickets</span>
-
-  <span class="lead-duration duration">0.050</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -1311,7 +1317,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
-  <span class="name">the delete ticket API response status code should be <span class="argument">200</span></span>
+  <span class="name">the get tickets API response status code should be <span class="argument">200</span></span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1338,36 +1344,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">I fetch all tickets</span>
+  <span class="name">the tickets response should be valid</span>
 
-  <span class="lead-duration duration">0.013</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then passed">
-  <span class="keyword indention">Then</span>
-  <span class="name">verify the ticket is deleted successfully in the tickets list</span>
-
-  <span class="lead-duration duration">0.024</span>
+  <span class="lead-duration duration">0.011</span>
 
 </div>
 
@@ -1521,14 +1500,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.033</span>
+  <span class="lead-duration duration">0.074</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-27">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create ticket without assignee and expect assign_to is null</span>
+  <span class="name">Fetch a ticket by ID</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1594,9 +1573,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">I create a ticket with details:</span>
+  <span class="name">I fetch all tickets</span>
 
-  <span class="lead-duration duration">0.023</span>
+  <span class="lead-duration duration">0.017</span>
 
 </div>
 
@@ -1606,32 +1585,33 @@ $(document).ready(function() {
 
 
 
-          <table class="step-arguments">
-              <tr>
-                  <td>title</td>
-                  <td>Testing tickets</td>
-              </tr>
-              <tr>
-                  <td>description</td>
-                  <td>System issue2</td>
-              </tr>
-              <tr>
-                  <td>priority</td>
-                  <td>low</td>
-              </tr>
-              <tr>
-                  <td>source</td>
-                  <td>email</td>
-              </tr>
-              <tr>
-                  <td>status</td>
-                  <td>open</td>
-              </tr>
-              <tr>
-                  <td>requestor</td>
-                  <td>agent@gmail.com</td>
-              </tr>
-          </table>
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">I fetch a ticket using ticket_id from the fetched tickets</span>
+
+  <span class="lead-duration duration">0.048</span>
+
+</div>
+
+
+
+
+
+
+
 
 
 
@@ -1647,7 +1627,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
-  <span class="name">the create ticket API response status code should be <span class="argument">201</span></span>
+  <span class="name">the get ticket API response status code should be <span class="argument">200</span></span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1674,9 +1654,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">the created ticket should have assign_to as null</span>
+  <span class="name">verify the fetched ticket data is valid</span>
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -1830,14 +1810,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.037</span>
+  <span class="lead-duration duration">0.102</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-33">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create ticket without status and expect default &quot;open&quot; status</span>
+  <span class="name">Deleting a ticket</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1903,9 +1883,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">I create a ticket with details:</span>
+  <span class="name">I fetch all tickets</span>
 
-  <span class="lead-duration duration">0.028</span>
+  <span class="lead-duration duration">0.017</span>
 
 </div>
 
@@ -1915,32 +1895,33 @@ $(document).ready(function() {
 
 
 
-          <table class="step-arguments">
-              <tr>
-                  <td>title</td>
-                  <td>Testing tickets</td>
-              </tr>
-              <tr>
-                  <td>description</td>
-                  <td>System issue2</td>
-              </tr>
-              <tr>
-                  <td>priority</td>
-                  <td>low</td>
-              </tr>
-              <tr>
-                  <td>source</td>
-                  <td>email</td>
-              </tr>
-              <tr>
-                  <td>requestor</td>
-                  <td>agent@gmail.com</td>
-              </tr>
-              <tr>
-                  <td>assign_to</td>
-                  <td>admin@gmail.com</td>
-              </tr>
-          </table>
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">I delete a ticket using ticket_id from the fetched tickets</span>
+
+  <span class="lead-duration duration">0.045</span>
+
+</div>
+
+
+
+
+
+
+
 
 
 
@@ -1956,7 +1937,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
-  <span class="name">the create ticket API response status code should be <span class="argument">201</span></span>
+  <span class="name">the delete ticket API response status code should be <span class="argument">200</span></span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1983,9 +1964,36 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">the created ticket status should be <span class="argument">&quot;open&quot;</span></span>
+  <span class="name">I fetch all tickets</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.014</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">verify the ticket is deleted successfully in the tickets list</span>
+
+  <span class="lead-duration duration">0.024</span>
 
 </div>
 
@@ -2139,14 +2147,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.030</span>
+  <span class="lead-duration duration">0.027</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-39">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create ticket without source and expect default &quot;email&quot;</span>
+  <span class="name">Create ticket without assignee and expect assign_to is null</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2214,7 +2222,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">I create a ticket with details:</span>
 
-  <span class="lead-duration duration">0.020</span>
+  <span class="lead-duration duration">0.019</span>
 
 </div>
 
@@ -2238,16 +2246,16 @@ $(document).ready(function() {
                   <td>low</td>
               </tr>
               <tr>
-                  <td>requestor</td>
-                  <td>agent@gmail.com</td>
+                  <td>source</td>
+                  <td>email</td>
               </tr>
               <tr>
                   <td>status</td>
                   <td>open</td>
               </tr>
               <tr>
-                  <td>assign_to</td>
-                  <td>admin@gmail.com</td>
+                  <td>requestor</td>
+                  <td>agent@gmail.com</td>
               </tr>
           </table>
 
@@ -2292,9 +2300,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">the created ticket source should be <span class="argument">&quot;email&quot;</span></span>
+  <span class="name">the created ticket should have assign_to as null</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -2448,14 +2456,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.025</span>
+  <span class="lead-duration duration">0.033</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-45">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create ticket without title and expect error message</span>
+  <span class="name">Create ticket without status and expect default &quot;open&quot; status</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2523,7 +2531,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">I create a ticket with details:</span>
 
-  <span class="lead-duration duration">0.017</span>
+  <span class="lead-duration duration">0.022</span>
 
 </div>
 
@@ -2535,6 +2543,10 @@ $(document).ready(function() {
 
           <table class="step-arguments">
               <tr>
+                  <td>title</td>
+                  <td>Testing tickets</td>
+              </tr>
+              <tr>
                   <td>description</td>
                   <td>System issue2</td>
               </tr>
@@ -2543,8 +2555,8 @@ $(document).ready(function() {
                   <td>low</td>
               </tr>
               <tr>
-                  <td>status</td>
-                  <td>open</td>
+                  <td>source</td>
+                  <td>email</td>
               </tr>
               <tr>
                   <td>requestor</td>
@@ -2552,11 +2564,7 @@ $(document).ready(function() {
               </tr>
               <tr>
                   <td>assign_to</td>
-                  <td>agent@gmail.com</td>
-              </tr>
-              <tr>
-                  <td>source</td>
-                  <td>email</td>
+                  <td>admin@gmail.com</td>
               </tr>
           </table>
 
@@ -2574,7 +2582,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
-  <span class="name">the create ticket API response status code should be <span class="argument">422</span></span>
+  <span class="name">the create ticket API response status code should be <span class="argument">201</span></span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2601,9 +2609,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">the API error message should be <span class="argument">&quot;Title can't be blank&quot;</span></span>
+  <span class="name">the created ticket status should be <span class="argument">&quot;open&quot;</span></span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -2757,14 +2765,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.024</span>
+  <span class="lead-duration duration">0.029</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-51">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create ticket without description and expect error message</span>
+  <span class="name">Create ticket without source and expect default &quot;email&quot;</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2832,7 +2840,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">I create a ticket with details:</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
@@ -2848,24 +2856,24 @@ $(document).ready(function() {
                   <td>Testing tickets</td>
               </tr>
               <tr>
-                  <td>priority</td>
-                  <td>high</td>
+                  <td>description</td>
+                  <td>System issue2</td>
               </tr>
               <tr>
-                  <td>status</td>
-                  <td>open</td>
+                  <td>priority</td>
+                  <td>low</td>
               </tr>
               <tr>
                   <td>requestor</td>
                   <td>agent@gmail.com</td>
               </tr>
               <tr>
-                  <td>assign_to</td>
-                  <td>agent@gmail.com</td>
+                  <td>status</td>
+                  <td>open</td>
               </tr>
               <tr>
-                  <td>source</td>
-                  <td>email</td>
+                  <td>assign_to</td>
+                  <td>admin@gmail.com</td>
               </tr>
           </table>
 
@@ -2883,7 +2891,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
-  <span class="name">the create ticket API response status code should be <span class="argument">422</span></span>
+  <span class="name">the create ticket API response status code should be <span class="argument">201</span></span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2910,7 +2918,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">the API error message should be <span class="argument">&quot;Description can't be blank&quot;</span></span>
+  <span class="name">the created ticket source should be <span class="argument">&quot;email&quot;</span></span>
 
   <span class="lead-duration duration">0.007</span>
 
@@ -3066,14 +3074,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.019</span>
+  <span class="lead-duration duration">0.024</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-57">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create ticket without requestor and expect error message</span>
+  <span class="name">Create ticket without title and expect error message</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -3141,7 +3149,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">I create a ticket with details:</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.017</span>
 
 </div>
 
@@ -3153,20 +3161,20 @@ $(document).ready(function() {
 
           <table class="step-arguments">
               <tr>
-                  <td>title</td>
-                  <td>Testing tickets</td>
-              </tr>
-              <tr>
                   <td>description</td>
                   <td>System issue2</td>
               </tr>
               <tr>
                   <td>priority</td>
-                  <td>medium</td>
+                  <td>low</td>
               </tr>
               <tr>
                   <td>status</td>
                   <td>open</td>
+              </tr>
+              <tr>
+                  <td>requestor</td>
+                  <td>agent@gmail.com</td>
               </tr>
               <tr>
                   <td>assign_to</td>
@@ -3219,9 +3227,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">the API error message should be <span class="argument">&quot;Requestor can't be blank&quot;</span></span>
+  <span class="name">the API error message should be <span class="argument">&quot;Title can't be blank&quot;</span></span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -3375,14 +3383,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.022</span>
+  <span class="lead-duration duration">0.028</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-63">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create ticket without priority and expect error message</span>
+  <span class="name">Create ticket without description and expect error message</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -3450,7 +3458,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">I create a ticket with details:</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
@@ -3466,8 +3474,8 @@ $(document).ready(function() {
                   <td>Testing tickets</td>
               </tr>
               <tr>
-                  <td>description</td>
-                  <td>System issue2</td>
+                  <td>priority</td>
+                  <td>high</td>
               </tr>
               <tr>
                   <td>status</td>
@@ -3528,9 +3536,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">the API error message should be <span class="argument">&quot;Priority must be one of: low, medium, high&quot;</span></span>
+  <span class="name">the API error message should be <span class="argument">&quot;Description can't be blank&quot;</span></span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -3691,7 +3699,7 @@ $(document).ready(function() {
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create ticket with invalid status and expect error message</span>
+  <span class="name">Create ticket without requestor and expect error message</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -3759,7 +3767,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">I create a ticket with details:</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.016</span>
 
 </div>
 
@@ -3779,20 +3787,20 @@ $(document).ready(function() {
                   <td>System issue2</td>
               </tr>
               <tr>
-                  <td>status</td>
-                  <td>asasdf</td>
-              </tr>
-              <tr>
-                  <td>requestor</td>
-                  <td>agent@gmail.com</td>
-              </tr>
-              <tr>
                   <td>priority</td>
-                  <td>low</td>
+                  <td>medium</td>
+              </tr>
+              <tr>
+                  <td>status</td>
+                  <td>open</td>
               </tr>
               <tr>
                   <td>assign_to</td>
-                  <td>admin@gmail.com</td>
+                  <td>agent@gmail.com</td>
+              </tr>
+              <tr>
+                  <td>source</td>
+                  <td>email</td>
               </tr>
           </table>
 
@@ -3837,9 +3845,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">the API error message should be <span class="argument">&quot;Status must be one of: open, in_progress, on_hold, resolved, closed&quot;</span></span>
+  <span class="name">the API error message should be <span class="argument">&quot;Requestor can't be blank&quot;</span></span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -3993,14 +4001,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.028</span>
+  <span class="lead-duration duration">0.021</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-75">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Verify pagination of tickets</span>
+  <span class="name">Create ticket without priority and expect error message</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -4066,9 +4074,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">I fetch all tickets</span>
+  <span class="name">I create a ticket with details:</span>
 
-  <span class="lead-duration duration">0.018</span>
+  <span class="lead-duration duration">0.014</span>
 
 </div>
 
@@ -4078,6 +4086,32 @@ $(document).ready(function() {
 
 
 
+          <table class="step-arguments">
+              <tr>
+                  <td>title</td>
+                  <td>Testing tickets</td>
+              </tr>
+              <tr>
+                  <td>description</td>
+                  <td>System issue2</td>
+              </tr>
+              <tr>
+                  <td>status</td>
+                  <td>open</td>
+              </tr>
+              <tr>
+                  <td>requestor</td>
+                  <td>agent@gmail.com</td>
+              </tr>
+              <tr>
+                  <td>assign_to</td>
+                  <td>agent@gmail.com</td>
+              </tr>
+              <tr>
+                  <td>source</td>
+                  <td>email</td>
+              </tr>
+          </table>
 
 
 
@@ -4093,7 +4127,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
-  <span class="name">the get tickets API response status code should be <span class="argument">200</span></span>
+  <span class="name">the create ticket API response status code should be <span class="argument">422</span></span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -4120,9 +4154,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
-  <span class="name">verify the tickets response has pagination implemented</span>
+  <span class="name">the API error message should be <span class="argument">&quot;Priority must be one of: low, medium, high&quot;</span></span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -4276,14 +4310,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.093</span>
+  <span class="lead-duration duration">0.022</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-81">
 
 <div class="brief passed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Updating details of a ticket</span>
+  <span class="name">Create ticket with invalid status and expect error message</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -4349,9 +4383,601 @@ $(document).ready(function() {
 
 <div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
-  <span class="name">I fetch all tickets</span>
+  <span class="name">I create a ticket with details:</span>
 
   <span class="lead-duration duration">0.015</span>
+
+</div>
+
+
+
+
+
+
+
+          <table class="step-arguments">
+              <tr>
+                  <td>title</td>
+                  <td>Testing tickets</td>
+              </tr>
+              <tr>
+                  <td>description</td>
+                  <td>System issue2</td>
+              </tr>
+              <tr>
+                  <td>status</td>
+                  <td>asasdf</td>
+              </tr>
+              <tr>
+                  <td>requestor</td>
+                  <td>agent@gmail.com</td>
+              </tr>
+              <tr>
+                  <td>priority</td>
+                  <td>low</td>
+              </tr>
+              <tr>
+                  <td>assign_to</td>
+                  <td>admin@gmail.com</td>
+              </tr>
+          </table>
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the create ticket API response status code should be <span class="argument">422</span></span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">the API error message should be <span class="argument">&quot;Status must be one of: open, in_progress, on_hold, resolved, closed&quot;</span></span>
+
+  <span class="lead-duration duration">0.006</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+  <div class="inner-level hooks-element-after">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#after-84">
+
+<div class="brief passed">
+  <span class="keyword indention">Hooks</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+    </div>
+
+    <div id="after-84" class="inner-level collapse collapsable-details ">
+        <div class="hook">
+          <div class="brief passed">
+            <span class="keyword indention">After</span>
+              <span class="location name">hooks.Hooks.afterScenario()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+          </div>
+
+
+
+
+
+
+
+        </div>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-85">
+
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-85" class="collapse collapsable-details ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-86">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-86" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">I am logged in as a valid user</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_695217830.html">@tickets</a>
+       <a href="report-tag_233058432.html">@regression</a>
+</div>
+
+
+  <span class="lead-duration duration">0.020</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-87">
+
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Verify pagination of tickets</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-87" class="collapse collapsable-details ">
+
+
+  <div class="inner-level hooks-element-before">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#before-88">
+
+<div class="brief passed">
+  <span class="keyword indention">Hooks</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+    </div>
+
+    <div id="before-88" class="inner-level collapse collapsable-details ">
+        <div class="hook">
+          <div class="brief passed">
+            <span class="keyword indention">Before</span>
+              <span class="location name">hooks.Hooks.beforeScenario()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+          </div>
+
+
+
+
+
+
+
+        </div>
+    </div>
+  </div>
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-89">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-89" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">I fetch all tickets</span>
+
+  <span class="lead-duration duration">0.013</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then passed">
+  <span class="keyword indention">Then</span>
+  <span class="name">the get tickets API response status code should be <span class="argument">200</span></span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">verify the tickets response has pagination implemented</span>
+
+  <span class="lead-duration duration">0.007</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+  <div class="inner-level hooks-element-after">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#after-90">
+
+<div class="brief passed">
+  <span class="keyword indention">Hooks</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+    </div>
+
+    <div id="after-90" class="inner-level collapse collapsable-details ">
+        <div class="hook">
+          <div class="brief passed">
+            <span class="keyword indention">After</span>
+              <span class="location name">hooks.Hooks.afterScenario()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+          </div>
+
+
+
+
+
+
+
+        </div>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-91">
+
+<div class="brief passed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-91" class="collapse collapsable-details ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-92">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-92" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">I am logged in as a valid user</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_695217830.html">@tickets</a>
+       <a href="report-tag_233058432.html">@regression</a>
+</div>
+
+
+  <span class="lead-duration duration">0.079</span>
+
+
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-93">
+
+<div class="brief passed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Updating details of a ticket</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-93" class="collapse collapsable-details ">
+
+
+  <div class="inner-level hooks-element-before">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#before-94">
+
+<div class="brief passed">
+  <span class="keyword indention">Hooks</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+    </div>
+
+    <div id="before-94" class="inner-level collapse collapsable-details ">
+        <div class="hook">
+          <div class="brief passed">
+            <span class="keyword indention">Before</span>
+              <span class="location name">hooks.Hooks.beforeScenario()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+          </div>
+
+
+
+
+
+
+
+        </div>
+    </div>
+  </div>
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-95">
+
+<div class="brief passed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-95" class="inner-level collapse collapsable-details ">
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">I fetch all tickets</span>
+
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -4378,7 +5004,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">I update the details of a ticket with:</span>
 
-  <span class="lead-duration duration">0.045</span>
+  <span class="lead-duration duration">0.036</span>
 
 </div>
 
@@ -4462,7 +5088,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">I fetch all tickets</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -4489,7 +5115,7 @@ $(document).ready(function() {
   <span class="keyword indention">Then</span>
   <span class="name">verify the ticket details are updated successfully in the tickets list</span>
 
-  <span class="lead-duration duration">0.020</span>
+  <span class="lead-duration duration">0.019</span>
 
 </div>
 
@@ -4516,7 +5142,7 @@ $(document).ready(function() {
 
 
   <div class="inner-level hooks-element-after">
-    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#after-84">
+    <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#after-96">
 
 <div class="brief passed">
   <span class="keyword indention">Hooks</span>
@@ -4528,7 +5154,7 @@ $(document).ready(function() {
 
     </div>
 
-    <div id="after-84" class="inner-level collapse collapsable-details ">
+    <div id="after-96" class="inner-level collapse collapsable-details ">
         <div class="hook">
           <div class="brief passed">
             <span class="keyword indention">After</span>
