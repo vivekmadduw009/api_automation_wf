@@ -70,4 +70,10 @@ public class TicketRoutes {
     {
         return "/api/version1/notifications/mark_read";
     }
+
+    public static String markAllReadNotification()
+    {
+        return "/api/version1/notifications/mark_all_read";
+    }
+
 }

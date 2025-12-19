@@ -12,9 +12,10 @@ public class NotificationsSteps {
 
     private final ApiManager api = new ApiManager();
     private Map<String, String> lastTicketData;
-    public NotificationsSteps() {}
     private Response getNotificationResponse;
     private Integer getId;
+    private Response markRead;
+    private Response markAllRead;
 
 
     @And("Log in with Agent user")
@@ -26,7 +27,7 @@ public class NotificationsSteps {
     public void createTicketNotification(Map<String, String> data)
     {
         lastTicketData = data;
-        api.tickets().createTicket(data);
+        api.tickets().createTicket(lastTicketData);
     }
 
     @And("the create ticket API response in notifications status code should be {int}")
@@ -61,13 +62,14 @@ public class NotificationsSteps {
     @And("Mark that notification as read")
     public void markReadNotification()
     {
-    api.notifications().markReadNotification(getId);
+        markRead= api.notifications().markReadNotification(getId);
     }
 
     @Then("the mark-read notification API response status code should be {int}")
     public void validateStatusCodeMarkRead(int expectedStatusCode)
     {
-        api.notifications().validateMarkReadStatusCode(expectedStatusCode);
+
+        api.notifications().validateMarkReadStatusCode(markRead,expectedStatusCode);
     }
 
     @And("verify mark read api in response")
@@ -82,5 +84,38 @@ public class NotificationsSteps {
         Response resp =api.notifications().getNotifications();
         api.notifications().validateNotificationResponseAfterMarkRead(resp,getId);
     }
+
+    @And("Get and store read value of all notification")
+    public void storeAllNotification()
+    {
+        Response response=api.notifications().getNotifications();
+        api.notifications().beforeNotificationData(response);
+    }
+
+   @And("Mark all notification as read")
+    public void getMarkAllNotification()
+   {
+       markAllRead=api.notifications().getMarkAllRead();
+   }
+
+   @Then("the mark-all-read notification API response status code should be {int}")
+   public void validateStatusCodeMarkAllRead(int expectedStatusCode)
+   {
+
+       api.notifications().validateStatusCodeMarkReadAll(markAllRead,expectedStatusCode);
+   }
+
+   @And("verify mark all read api in response")
+   public void validateMarkAllResponse()
+   {
+        api.notifications().validateMarkAllReadResponse(markAllRead);
+   }
+   @And("verify all notification read status after marking all read")
+    public void validateDataAfterMarkAllReadNotification()
+   {
+       Response response=api.notifications().getNotifications();
+       api.notifications().afterNotificationData(response);
+   }
+
 }
 
