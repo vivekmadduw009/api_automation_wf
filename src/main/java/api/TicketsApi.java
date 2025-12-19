@@ -38,9 +38,9 @@ public class TicketsApi {
     public Response getTickets() {
         logger.info("Fetching tickets (fresh)");
         getTicketsResponse = given()
-                .spec(RequestBuilder.getAuthSpecCached())
+                .spec(RequestBuilder.getAuthSpecCached()).queryParam("page",1).queryParam("per_page",500)
                 .when()
-                .get(TicketRoutes.getTickets());
+                .get(TicketRoutes.getTickets()) ;
         logger.debug("Get Tickets resp: {}", getTicketsResponse.asPrettyString());
         return getTicketsResponse;
     }
