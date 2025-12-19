@@ -202,6 +202,11 @@ public class TicketsApi {
         logger.debug("Create response: {}", createdTicketResponse.asPrettyString());
     }
 
+    public Response getCreatedTicketResponse() {
+        return createdTicketResponse;
+    }
+
+
     public void validateCreatedTicketFromGetTicketsResponse(Map<String, String> expectedInputData) {
         if (createdTicketResponse == null) {
             throw new IllegalStateException("No created ticket response to validate");
@@ -213,6 +218,7 @@ public class TicketsApi {
         if (!ticket.containsKey("ticket_id")) {
             throw new AssertionError("Created ticket missing ticket_id: " + ticket);
         }
+
         this.createdTicketId = String.valueOf(ticket.get("ticket_id"));
 
         if (createdTicketId == null) {

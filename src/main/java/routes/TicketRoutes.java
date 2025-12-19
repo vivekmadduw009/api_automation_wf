@@ -61,4 +61,13 @@ public class TicketRoutes {
     public static String deleteWatchers(String ticketId){
         return "/api/version1/tickets/"+ ticketId +"/watch";
     }
+
+    public static String getNotifications(){
+        return "/api/version1/notifications";
+    }
+
+    public static String markReadNotification()
+    {
+        return "/api/version1/notifications/mark_read";
+    }
 }
