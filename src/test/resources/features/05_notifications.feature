@@ -56,6 +56,30 @@ Feature: Notifications API Validation
     And verify all notification read status after marking all read
 
 
+  Scenario: Verify if user is getting notification when status is changed
+    When I fetch all tickets
+    And Get ticket details where requestor admin, assignee is agent and status is open
+    And  Update the status to inprogress with following details:
+      | title       | Updated Testing tickets |
+      | description | Updated System issue2   |
+      | priority    | low                     |
+      | source      | email                   |
+      | status      | in_progress             |
+      | requestor   | admin@gmail.com         |
+      | assign_to   | agent@gmail.com         |
+    And Log in with Agent user
+    And Fetch all notification
+    Then the get notification API response status code should be 200
+    And Verify in get response that notification is created for status update
+
+
+
+
+
+
+
+
+
 
 
 

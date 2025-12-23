@@ -1,5 +1,6 @@
 package api;
 
+import io.cucumber.java.it.Ma;
 import io.restassured.builder.ResponseBuilder;
 import io.restassured.http.ContentType;
 import org.slf4j.Logger;
@@ -8,6 +9,8 @@ import io.restassured.response.Response;
 import utils.LoggerUtil;
 import utils.RequestBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +29,13 @@ public class NotificationApi {
     private Integer idFound;
     private Map<Integer, Boolean> notificationsBefore;
     private Response markAllReadResponse;
+    private String requester;
+    private String assignee;
+    private String status;
+    private Response updateTickedResponse;
+    private Map<String, Object> statusUpdateResult;
+    private Integer updateStatusId;
+
 
     public NotificationApi(ApiManager apiManager) {
         this.apiManager = apiManager;
@@ -294,10 +304,8 @@ public class NotificationApi {
 
         if (success) {
             logger.info("Mark All read response is validated");
-        } else if (success == false) {
-            throw new AssertionError("Expected success=true but found false");
-        } else {
-            throw new AssertionError("Expected success=true but found success=" + success);
+        } else  {
+            throw new AssertionError("Expected success=true but found success:"+success);
         }
     }
 
@@ -319,6 +327,89 @@ public class NotificationApi {
             }
 
         }
+    }
+
+    public Map<String, Object> getDataOfTicket(Response response)
+    {
+        List<Map<String, Object>> allNotification =
+                response.jsonPath().getList("tickets");
+        statusUpdateResult = new HashMap<>();
+
+        for(Map<String, Object> notification:allNotification)
+        {
+            requester=(String) notification.get("requestor");
+            assignee=(String) notification.get("assign_to");
+            status=(String) notification.get("status");
+
+            if(requester.equals("admin@gmail.com") && assignee.equals("agent@gmail.com") && status.equals("open"))
+            {
+                statusUpdateResult.put("id",notification.get("id"));
+                statusUpdateResult.put("ticket_id",notification.get("ticket_id"));
+                break;
+
+            }
+
+        }
+        System.out.println("checking"+statusUpdateResult);
+        return statusUpdateResult;
+    }
+
+
+    public void updateStatus(Map<String, String> data)
+    {
+         String updatedTicketId=(String) statusUpdateResult.get("ticket_id");
+         updateStatusId=(Integer) statusUpdateResult.get("id");
+
+        updateTickedResponse = given()
+                .spec(RequestBuilder.getAuthSpecCached())
+                .body(data)
+                .when()
+                .put(TicketRoutes.updateTicket(updatedTicketId));
+        logger.debug("Update details response: {}", updateTickedResponse.asPrettyString());
+
+        Integer id=updateTickedResponse.jsonPath().get("ticket.id");
+        String ticketId=updateTickedResponse.jsonPath().get("ticket.ticket_id");
+     /*   if(!updatedTicketId.equals(ticketId) && !updateStatusId.equals(id));
+        {
+          throw new IllegalStateException("Ticket is updated wrongly"+updateTickedResponse.asPrettyString());
+        }*/
+
+        if(!updatedTicketId.equals(ticketId) && !updateStatusId.equals(id))
+        {
+            System.out.println(updatedTicketId+"  :"+ticketId);
+            System.out.println(updateStatusId+"  :"+id);
+            throw new IllegalStateException("Wrong ticket updated"+updateTickedResponse.asPrettyString());
+        }
+
+    }
+
+    public void statusUpdateGetNotification(Response resp)
+    {
+        List<Map<String,Object>> notifications=resp.jsonPath().getList("");
+        boolean updatedTicketNotification = false;
+        for(Map<String,Object> notification:notifications)
+        {
+
+            Integer id=(Integer) notification.get("notifiable_id");
+            if(id.equals(updateStatusId))
+            {
+                updatedTicketNotification=true;
+                String message=(String) notification.get("message");
+                Boolean read=(Boolean) notification.get("read");
+                if(message.equals("Admin User changed status to in_progress") && read.equals(false))
+                {
+                    logger.info("Updated status has generated correct message and read status ");
+
+                } else
+                {
+                    throw new IllegalStateException("Updated status has generated wrong notification"+ id + message+read);
+                }
+                break;
+            }
+
+
+        }
+
     }
 }
 

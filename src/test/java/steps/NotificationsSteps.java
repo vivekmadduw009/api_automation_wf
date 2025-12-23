@@ -16,6 +16,7 @@ public class NotificationsSteps {
     private Integer getId;
     private Response markRead;
     private Response markAllRead;
+    private Map<String, String> updateTicketDtata;
 
 
     @And("Log in with Agent user")
@@ -115,6 +116,29 @@ public class NotificationsSteps {
    {
        Response response=api.notifications().getNotifications();
        api.notifications().afterNotificationData(response);
+   }
+
+   @And("Get ticket details where requestor admin, assignee is agent and status is open")
+    public void ticketForStatusUpdate()
+   {
+       Response response=api.tickets().getTickets();
+        api.notifications().getDataOfTicket(response);
+
+   }
+
+   @And("Update the status to inprogress with following details:")
+    public void updateStatus(Map<String, String> data)
+   {
+       updateTicketDtata=data;
+        api.notifications().updateStatus(updateTicketDtata);
+   }
+
+   @And("Verify in get response that notification is created for status update")
+    public void validateNotificationAfterStatusUpdate()
+   {
+       Response response=api.notifications().getNotifications();
+       api.notifications().statusUpdateGetNotification(response);
+
    }
 
 }
